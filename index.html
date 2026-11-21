@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FloraPack 3D Studio — Дизайн флористической упаковки</title>
+  <title>FloraPack 3D Studio — Дизайн упаковки и QR-гид по уходу</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
     :root {
       --bg-app: #0f1115;
@@ -45,328 +46,197 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; white-space: nowrap; }
     .brand-icon {
       width: 30px; height: 30px;
       background: linear-gradient(135deg, #10b981, #047857);
-      border-radius: 8px;
-      display: grid; place-items: center;
-      font-size: 16px;
+      border-radius: 8px; display: grid; place-items: center; font-size: 16px;
     }
-    .product-tabs {
-      display: flex;
-      gap: 4px;
-      overflow-x: auto;
-      padding: 4px 0;
-    }
+    .product-tabs { display: flex; gap: 4px; overflow-x: auto; padding: 4px 0; }
     .tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      padding: 6px 11px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: all 0.15s;
+      background: transparent; border: 1px solid transparent; color: var(--text-muted);
+      padding: 6px 11px; border-radius: 7px; cursor: pointer; font-size: 12px;
+      font-weight: 500; white-space: nowrap; transition: all 0.15s;
     }
     .tab-btn:hover { background: var(--bg-card); color: var(--text-main); }
     .tab-btn.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: rgba(16, 185, 129, 0.35);
-      font-weight: 600;
+      background: var(--accent-soft); color: var(--accent);
+      border-color: rgba(16, 185, 129, 0.35); font-weight: 600;
     }
     .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-    /* Buttons & Inputs */
+    /* Buttons & Controls */
     .btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 7px 12px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.15s;
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main);
+      padding: 7px 12px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px; transition: 0.15s;
     }
     .btn:hover { background: var(--bg-hover); }
-    .btn-primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #042f2e;
-      font-weight: 600;
-    }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #042f2e; font-weight: 600; }
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-sm { padding: 5px 8px; font-size: 11px; }
     .btn-danger { color: #fca5a5; border-color: rgba(239,68,68,0.3); }
     .btn-danger:hover { background: rgba(239,68,68,0.15); }
 
-    /* Workspace Layout */
-    .workspace {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 295px 1fr 295px;
-      min-height: 0;
-    }
+    /* Workspace */
+    .workspace { flex: 1; display: grid; grid-template-columns: 295px 1fr 295px; min-height: 0; }
     aside {
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border);
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      background: var(--bg-panel); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;
     }
     aside.right { border-right: none; border-left: 1px solid var(--border); }
 
-    /* Section Cards */
     .section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px; display: flex; flex-direction: column; gap: 9px;
     }
     .section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-muted); font-weight: 700; display: flex; justify-content: space-between; align-items: center;
     }
-    .control-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .control-inline {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
+    .control-row { display: flex; flex-direction: column; gap: 4px; }
+    .control-inline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     label { font-size: 12px; color: #cbd5e1; }
     .val-badge { font-size: 11px; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
     input[type="text"], input[type="number"], select {
-      width: 100%;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      outline: none;
+      width: 100%; background: var(--bg-panel); border: 1px solid var(--border);
+      color: var(--text-main); padding: 6px 8px; border-radius: 6px; font-size: 12px; outline: none;
     }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus {
-      border-color: var(--accent);
-    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--accent); }
     input[type="color"] {
-      width: 34px; height: 28px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: none;
-      cursor: pointer;
-      padding: 1px;
+      width: 34px; height: 28px; border: 1px solid var(--border); border-radius: 6px;
+      background: none; cursor: pointer; padding: 1px;
     }
-    input[type="checkbox"] {
-      accent-color: var(--accent);
-      width: 15px; height: 15px;
-      cursor: pointer;
-    }
+    input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 
-    .preset-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
+    .preset-pills { display: flex; flex-wrap: wrap; gap: 5px; }
     .pill {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 11px;
-      cursor: pointer;
+      background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 4px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
     }
     .pill:hover { border-color: var(--accent); color: var(--text-main); }
     .pill.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 
     /* Center Viewport */
-    .center-stage {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      min-height: 0;
-      background: #0b0d11;
-    }
+    .center-stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #0b0d11; }
     .view-bar {
-      height: 38px;
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 12px;
-      font-size: 12px;
-      flex-shrink: 0;
+      height: 38px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 12px; flex-shrink: 0;
     }
-    .split-views {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      min-height: 0;
-    }
+    .split-views { flex: 1; display: grid; grid-template-columns: 1fr 1.15fr; min-height: 0; }
     .split-views.mode-2d { grid-template-columns: 1fr 0fr; }
     .split-views.mode-2d .pane-3d { display: none; }
     .split-views.mode-3d { grid-template-columns: 0fr 1fr; }
     .split-views.mode-3d .pane-2d { display: none; }
 
-    .pane {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      min-height: 0;
-    }
+    .pane { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; }
     .pane-2d {
       background: #13161c;
       background-image: radial-gradient(#262c38 1px, transparent 1px);
       background-size: 18px 18px;
-      border-right: 1px solid var(--border);
-      padding: 14px;
+      border-right: 1px solid var(--border); padding: 14px;
     }
-    #editor2d {
-      max-width: 100%;
-      max-height: 100%;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.45);
-      border-radius: 4px;
-      cursor: crosshair;
-      background: #1c2029;
-    }
+    #editor2d { max-width: 100%; max-height: 100%; box-shadow: 0 12px 35px rgba(0,0,0,0.45); border-radius: 4px; cursor: crosshair; background: #1c2029; }
     .pane-3d { background: #101318; }
     #canvas3d-wrap { width: 100%; height: 100%; }
 
     .pane-badge {
-      position: absolute;
-      top: 10px; left: 10px;
-      background: rgba(15, 17, 21, 0.78);
-      backdrop-filter: blur(6px);
-      border: 1px solid var(--border);
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: 11px;
-      color: var(--text-muted);
-      pointer-events: none;
-      z-index: 5;
+      position: absolute; top: 10px; left: 10px; background: rgba(15, 17, 21, 0.78);
+      backdrop-filter: blur(6px); border: 1px solid var(--border);
+      padding: 4px 9px; border-radius: 6px; font-size: 11px; color: var(--text-muted); pointer-events: none; z-index: 5;
     }
     .legend-2d {
-      position: absolute;
-      bottom: 10px; left: 10px;
-      background: rgba(15, 17, 21, 0.8);
-      border: 1px solid var(--border);
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: 11px;
-      display: flex;
-      gap: 12px;
-      pointer-events: none;
+      position: absolute; bottom: 10px; left: 10px; background: rgba(15, 17, 21, 0.8);
+      border: 1px solid var(--border); padding: 4px 9px; border-radius: 6px;
+      font-size: 11px; display: flex; gap: 12px; pointer-events: none;
     }
     .dot-cut { color: #fb7185; }
     .dot-fold { color: #38bdf8; }
 
-    /* Print Warning Banner */
-    .preflight-box {
-      padding: 7px 9px;
-      border-radius: 6px;
-      font-size: 11px;
-      line-height: 1.35;
-      border: 1px solid;
-    }
-    .preflight-ok {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.35);
-      color: #6ee7b7;
-    }
-    .preflight-warn {
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fcd34d;
-    }
+    .preflight-box { padding: 7px 9px; border-radius: 6px; font-size: 11px; line-height: 1.35; border: 1px solid; }
+    .preflight-ok { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+    .preflight-warn { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); color: #fcd34d; }
 
-    /* Layer List & Icons */
-    .icon-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-    }
+    .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
     .icon-btn {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px 4px;
-      cursor: pointer;
-      color: var(--text-main);
-      font-size: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 4px; cursor: pointer; color: var(--text-main); font-size: 15px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
     }
     .icon-btn span { font-size: 9px; color: var(--text-muted); }
     .icon-btn:hover { border-color: var(--accent); background: var(--bg-hover); }
 
-    .layer-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-height: 165px;
-      overflow-y: auto;
-    }
+    .layer-list { display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
     .layer-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: var(--bg-panel);
-      border: 1px solid transparent;
-      cursor: pointer;
-      font-size: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 8px; border-radius: 6px; background: var(--bg-panel);
+      border: 1px solid transparent; cursor: pointer; font-size: 12px;
     }
     .layer-item:hover { background: var(--bg-hover); }
     .layer-item.selected { border-color: var(--accent); background: var(--accent-soft); }
-    .layer-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 155px;
+    .layer-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+
+    /* Care Modal & Mobile Buyer View */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(8, 10, 14, 0.78); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 14px;
+      width: 100%; max-width: 760px; max-height: 90vh; display: flex; flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6); overflow: hidden;
+    }
+    .modal-head {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px;
+    }
+    .modal-body { padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .modal-foot {
+      padding: 12px 18px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; background: var(--bg-card);
+    }
+    .plant-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+    .plant-card-opt {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 10px; cursor: pointer; display: flex; align-items: flex-start; gap: 8px; transition: 0.15s;
+    }
+    .plant-card-opt:hover { border-color: var(--accent); }
+    .plant-card-opt.checked { background: var(--accent-soft); border-color: var(--accent); }
+    .plant-card-opt input { margin-top: 2px; }
+
+    .buyer-overlay {
+      position: fixed; inset: 0; z-index: 2000; background: #f3f7f4; color: #1e293b;
+      display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: 18px 14px 40px;
+    }
+    .buyer-overlay.open { display: flex; }
+    .buyer-phone { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
+    .buyer-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #ffffff; padding: 12px 16px; border-radius: 14px; box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+    }
+    .buyer-shop { font-weight: 700; font-size: 15px; color: #064e3b; display: flex; align-items: center; gap: 7px; }
+    .buyer-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .buyer-tab {
+      background: #ffffff; border: 1px solid #d1fae5; color: #065f46;
+      padding: 7px 13px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+    .buyer-tab.active { background: #10b981; color: #ffffff; border-color: #10b981; }
+    .buyer-card {
+      background: #ffffff; border-radius: 16px; padding: 18px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06); display: flex; flex-direction: column; gap: 14px;
+    }
+    .care-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 12px; background: #ecfdf5; color: #047857; }
+    .care-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .care-metric { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 11px; padding: 10px; }
+    .care-metric-title { font-size: 11px; color: #64748b; margin-bottom: 3px; font-weight: 600; }
+    .care-metric-val { font-size: 12.5px; color: #0f172a; line-height: 1.35; font-weight: 500; }
+    .care-checklist {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 11px;
+      padding: 12px; font-size: 12.5px; color: #78350f; line-height: 1.5;
     }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -401,13 +271,12 @@
   </div>
 
   <div class="header-actions">
-    <button class="btn" id="btnExportPNG" title="Сохранить 3D-превью в высоком качестве">📸 3D Рендер PNG</button>
-    <button class="btn btn-primary" id="btnExportSVG" title="Скачать чертеж развертки и макет для типографии">📐 Развертка SVG</button>
+    <button class="btn" id="btnExportPNG" title="Сохранить 3D-превью">📸 3D Рендер PNG</button>
+    <button class="btn btn-primary" id="btnExportSVG" title="Скачать чертеж и макет">📐 Развертка SVG</button>
   </div>
 </header>
 
 <div class="workspace">
-  <!-- LEFT SIDEBAR: MODEL, MATERIAL, PRINTING, SCENE -->
   <aside>
     <div class="section">
       <div class="section-title">1. Габариты и конструкция</div>
@@ -430,7 +299,7 @@
       <div class="control-inline" style="margin-top:2px;">
         <label for="bgFillColor">Заливка / Тон материала</label>
         <div style="display:flex; align-items:center; gap:6px;">
-          <input type="checkbox" id="bgFillEnabled" title="Включить цветную заливку фона развертки">
+          <input type="checkbox" id="bgFillEnabled">
           <input type="color" id="bgFillColor" value="#f8fafc">
         </div>
       </div>
@@ -480,7 +349,6 @@
     </div>
   </aside>
 
-  <!-- CENTER: 2D DIELINE EDITOR + 3D VIEWPORT -->
   <main class="center-stage">
     <div class="view-bar">
       <div style="display:flex; gap:6px; align-items:center;">
@@ -503,7 +371,6 @@
           <span class="dot-fold">- - - Биговка (сгиб)</span>
         </div>
       </div>
-
       <div class="pane pane-3d">
         <div class="pane-badge">3D Визуализация (ЛКМ — вращение, Колесо — зум)</div>
         <div id="canvas3d-wrap"></div>
@@ -511,7 +378,6 @@
     </div>
   </main>
 
-  <!-- RIGHT SIDEBAR: DESIGN TOOLS & LAYERS -->
   <aside class="right">
     <div class="section">
       <div class="section-title">Добавить на макет</div>
@@ -522,24 +388,27 @@
           <input type="file" id="imgUpload" accept="image/*" style="display:none;">
         </label>
       </div>
+      <button class="btn btn-primary" id="btnOpenCareModal" style="justify-content:center; width:100%;">
+        📱 + QR-код (Гид по уходу)
+      </button>
 
       <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Значки и маркировка:</div>
       <div class="icon-grid">
-        <button class="icon-btn" data-icon="flower" title="Логотип Цветок">🌸<span>Цветок</span></button>
-        <button class="icon-btn" data-icon="orchid" title="Силуэт Орхидеи">🌺<span>Орхидея</span></button>
-        <button class="icon-btn" data-icon="up" title="Верх (Не переворачивать)">⬆️<span>Верх</span></button>
-        <button class="icon-btn" data-icon="fragile" title="Хрупкое">🍷<span>Хрупкое</span></button>
-        <button class="icon-btn" data-icon="rain" title="Беречь от влаги">☂️<span>От влаги</span></button>
-        <button class="icon-btn" data-icon="eco" title="Переработка">♻️<span>Эко</span></button>
-        <button class="icon-btn" data-icon="temp" title="Температурный режим">❄️<span>+4..+8°C</span></button>
-        <button class="icon-btn" data-icon="heart" title="Сердце">💚<span>Сердце</span></button>
+        <button class="icon-btn" data-icon="flower">🌸<span>Цветок</span></button>
+        <button class="icon-btn" data-icon="orchid">🌺<span>Орхидея</span></button>
+        <button class="icon-btn" data-icon="up">⬆️<span>Верх</span></button>
+        <button class="icon-btn" data-icon="fragile">🍷<span>Хрупкое</span></button>
+        <button class="icon-btn" data-icon="rain">☂️<span>От влаги</span></button>
+        <button class="icon-btn" data-icon="eco">♻️<span>Эко</span></button>
+        <button class="icon-btn" data-icon="temp">❄️<span>+4..+8°C</span></button>
+        <button class="icon-btn" data-icon="heart">💚<span>Сердце</span></button>
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">
         <span>Слои дизайна</span>
-        <button class="btn btn-sm" id="btnResetDemo" title="Восстановить демо-оформление">✨ Демо</button>
+        <button class="btn btn-sm" id="btnResetDemo">✨ Демо</button>
       </div>
       <div class="layer-list" id="layerList"></div>
     </div>
@@ -559,10 +428,9 @@
 
       <div id="layerPropsBody" style="display:flex; flex-direction:column; gap:8px;">
         <div class="control-row" id="propTextWrap">
-          <label>Текст</label>
+          <label id="propTextLabel">Текст</label>
           <input type="text" id="propText">
         </div>
-
         <div class="control-row" id="propFontWrap">
           <label>Шрифт</label>
           <select id="propFont">
@@ -572,7 +440,6 @@
             <option value="Inter, sans-serif">Inter (Технический)</option>
           </select>
         </div>
-
         <div class="control-inline">
           <label>Цвет и прозрачность</label>
           <div style="display:flex; align-items:center; gap:6px;">
@@ -580,7 +447,6 @@
             <input type="range" id="propOpacity" min="0.1" max="1" step="0.05" style="width:75px;">
           </div>
         </div>
-
         <div class="control-row">
           <label>Постпечатная отделка (в 3D)</label>
           <select id="propFinish">
@@ -590,7 +456,6 @@
             <option value="uv_gloss">💧 Выборочный УФ-лак</option>
           </select>
         </div>
-
         <div class="control-row">
           <div class="control-inline">
             <label>Масштаб</label>
@@ -598,7 +463,6 @@
           </div>
           <input type="range" id="propScale" min="0.2" max="3.0" step="0.05">
         </div>
-
         <div class="control-row">
           <div class="control-inline">
             <label>Поворот</label>
@@ -606,7 +470,6 @@
           </div>
           <input type="range" id="propRot" min="-180" max="180" step="1">
         </div>
-
         <div class="control-inline" style="padding-top:4px; border-top:1px solid var(--border);">
           <label for="propRepeat">Паттерн (заполнить всё)</label>
           <input type="checkbox" id="propRepeat">
@@ -623,6 +486,93 @@
   </aside>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО: КОНСТРУКТОР QR-ГИДА ПО УХОДУ -->
+<div class="modal-backdrop" id="careModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <span>🌿 Конструктор QR-гида по уходу за растениями</span>
+      <button class="btn btn-sm" id="btnCloseCareModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="control-row">
+          <label>Название вашего магазина (для клиента)</label>
+          <input type="text" id="careShopName" value="Flora Studio">
+        </div>
+        <div class="control-row">
+          <label>Адрес сайта, где размещён файл (для QR)</label>
+          <input type="text" id="careBaseUrl" placeholder="Автоопределение">
+        </div>
+      </div>
+
+      <div class="control-row">
+        <div class="control-inline">
+          <label style="font-weight:600; color:var(--text-main);">1. Выберите позиции из заказа (можно несколько):</label>
+          <button class="btn btn-sm" id="btnToggleCustomPlant">+ Своё растение</button>
+        </div>
+        <div class="plant-check-grid" id="plantCheckGrid"></div>
+      </div>
+
+      <div id="customPlantForm" class="section" style="display:none; border-color:var(--accent);">
+        <div class="section-title">Добавить свою позицию в справочник</div>
+        <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:8px;">
+          <input type="text" id="cpName" placeholder="Название (напр. Пионы Сара Бернар)">
+          <select id="cpType">
+            <option value="Срезка">Срезка</option>
+            <option value="Букет">Букет</option>
+            <option value="Горшечное">Горшечное растение</option>
+          </select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <input type="text" id="cpWater" placeholder="Полив / Вода (напр. Смена воды раз в 2 дня)">
+          <input type="text" id="cpLight" placeholder="Свет (напр. Прохлада, без прямого солнца)">
+          <input type="text" id="cpTemp" placeholder="Температура (напр. +16..+22°C)">
+          <input type="text" id="cpPets" placeholder="Питомцы (напр. Безопасно / Токсично)">
+        </div>
+        <input type="text" id="cpTips" placeholder="Памятка при получении (через ; например: Обрезать под 45°; Удалить нижние листья)">
+        <button class="btn btn-primary btn-sm" id="btnSaveCustomPlant" style="align-self:flex-start;">Сохранить и выбрать</button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">2. Оформление QR-кода на упаковке</div>
+        <div style="display:grid; grid-template-columns: 1.4fr 1fr auto; gap:10px; align-items:center;">
+          <div class="control-row">
+            <label>Подпись под QR-кодом</label>
+            <input type="text" id="careQrCaption" value="Уход за цветами 🌿">
+          </div>
+          <div class="control-inline" style="margin-top:14px;">
+            <label for="careQrBg">Белая плашка-фон</label>
+            <input type="checkbox" id="careQrBg" checked>
+          </div>
+          <div class="control-row">
+            <label>Цвет QR</label>
+            <input type="color" id="careQrColor" value="#064e3b">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="btnPreviewBuyer">📱 Предпросмотр как у покупателя</button>
+      <button class="btn btn-primary" id="btnPlaceQr">✅ Разместить QR на упаковке</button>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН ПОКУПАТЕЛЯ (МОБИЛЬНЫЙ ГИД) -->
+<div class="buyer-overlay" id="careBuyerOverlay">
+  <div class="buyer-phone">
+    <div class="buyer-topbar">
+      <div class="buyer-shop">🌿 <span id="buyerShopTitle">Flora Studio</span></div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-sm" id="btnCopyCareLink" style="background:#f1f5f9; color:#0f172a; border-color:#cbd5e1;">🔗 Ссылка</button>
+        <button class="btn btn-sm" id="btnCloseBuyer" style="background:#0f172a; color:#fff;">✕ Закрыть</button>
+      </div>
+    </div>
+    <div class="buyer-tabs" id="buyerTabs"></div>
+    <div id="buyerContent"></div>
+  </div>
+</div>
+
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -633,31 +583,17 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 // =========================================================
 const TEX_W = 1600;
 const TEX_H = 1120;
-const CM_SCALE = 0.045; // 100 cm = 4.5 3D units
+const CM_SCALE = 0.045;
 
 const state = {
-  productType: 'cut_box', // cut_box, pot_box, cone_sleeve, bouquet_bag, wrap_sheet, ribbon
+  productType: 'cut_box',
   dims: {
-    // cut_box
-    L: 100, W: 40, H: 20,
-    boxStyle: 'telescopic', // telescopic | fefco0201
-    ventHoles: true,
-    // pot_box
-    potL: 60, potW: 40, potH: 32,
-    potDia: 12,
-    showFrontCut: true,
-    // cone_sleeve
-    coneTop: 38, coneBot: 14, coneH: 55,
-    conePerf: true,
-    // bouquet_bag
-    bagWTop: 32, bagWBot: 20, bagD: 18, bagH: 30,
-    bagHandle: 'cord', // cord | cutout
-    // wrap_sheet
-    wrapMode: 'bouquet', // sheet | bouquet
-    wrapPleats: 6,
-    // ribbon
-    ribbonWidthMm: 25,
-    ribbonMode: 'bow_spool', // spool | bow_spool
+    L: 100, W: 40, H: 20, boxStyle: 'telescopic', ventHoles: true,
+    potL: 60, potW: 40, potH: 32, potDia: 12, showFrontCut: true,
+    coneTop: 38, coneBot: 14, coneH: 55, conePerf: true,
+    bagWTop: 32, bagWBot: 20, bagD: 18, bagH: 30, bagHandle: 'cord',
+    wrapMode: 'bouquet', wrapPleats: 6,
+    ribbonWidthMm: 25, ribbonMode: 'bow_spool',
   },
   material: 'kraft',
   printMethod: 'offset',
@@ -674,26 +610,23 @@ const state = {
 let currentDieline = null;
 
 // =========================================================
-// 2. PROCEDURAL TEXTURES (KRAFT, FLUTE, CRINKLE, WOOD)
+// 2. PROCEDURAL TEXTURES
 // =========================================================
 function createProceduralTextures() {
-  // Kraft / Paper bump
   const bumpC = document.createElement('canvas');
   bumpC.width = 512; bumpC.height = 512;
   const bctx = bumpC.getContext('2d');
   bctx.fillStyle = '#808080';
   bctx.fillRect(0, 0, 512, 512);
   for (let i = 0; i < 6000; i++) {
-    const x = Math.random() * 512, y = Math.random() * 512;
     const v = 100 + Math.random() * 55;
     bctx.fillStyle = `rgb(${v},${v},${v})`;
-    bctx.fillRect(x, y, 1 + Math.random() * 3, 1);
+    bctx.fillRect(Math.random() * 512, Math.random() * 512, 1 + Math.random() * 3, 1);
   }
   const paperBumpTex = new THREE.CanvasTexture(bumpC);
   paperBumpTex.wrapS = paperBumpTex.wrapT = THREE.RepeatWrapping;
   paperBumpTex.repeat.set(3, 3);
 
-  // Tissue crinkle bump
   const crinkleC = document.createElement('canvas');
   crinkleC.width = 512; crinkleC.height = 512;
   const cctx = crinkleC.getContext('2d');
@@ -712,7 +645,6 @@ function createProceduralTextures() {
   crinkleBumpTex.wrapS = crinkleBumpTex.wrapT = THREE.RepeatWrapping;
   crinkleBumpTex.repeat.set(2, 2);
 
-  // Corrugated flute edge texture
   const fluteC = document.createElement('canvas');
   fluteC.width = 256; fluteC.height = 64;
   const fctx = fluteC.getContext('2d');
@@ -733,7 +665,6 @@ function createProceduralTextures() {
   fluteTex.wrapS = fluteTex.wrapT = THREE.RepeatWrapping;
   fluteTex.repeat.set(6, 1);
 
-  // Wood table texture
   const woodC = document.createElement('canvas');
   woodC.width = 512; woodC.height = 512;
   const wctx = woodC.getContext('2d');
@@ -756,34 +687,26 @@ function createProceduralTextures() {
 }
 
 // =========================================================
-// 3. DIELINE MATH & COORDINATE SYSTEM
+// 3. DIELINE MATH
 // =========================================================
 function computeDieline(st) {
   const pad = 70;
   const usableW = TEX_W - pad * 2;
   const usableH = TEX_H - pad * 2;
-  const cutPaths = [];
-  const creasePaths = [];
-  const annotations = [];
-  const panels = {};
+  const cutPaths = [], creasePaths = [], annotations = [], panels = {};
   let meta = {};
 
   if (st.productType === 'cut_box') {
     const { L, W, H, boxStyle } = st.dims;
     if (boxStyle === 'telescopic') {
-      // Tray dieline on top, Lid dieline below
       const lidH = Math.min(10, Math.max(5, H * 0.45));
       const lidL = L + 1.6, lidW = W + 1.6;
-      const trayTotalW = L + 2 * H;
-      const trayTotalH = W + 2 * H;
-      const lidTotalW = lidL + 2 * lidH;
-      const lidTotalH = lidW + 2 * lidH;
+      const trayTotalW = L + 2 * H, trayTotalH = W + 2 * H;
+      const lidTotalW = lidL + 2 * lidH, lidTotalH = lidW + 2 * lidH;
       const gapCm = 12;
-
       const totalCmW = Math.max(trayTotalW, lidTotalW);
       const totalCmH = trayTotalH + gapCm + lidTotalH;
       const sc = Math.min(usableW / totalCmW, usableH / totalCmH);
-
       const oxTray = pad + (usableW - trayTotalW * sc) / 2;
       const oyTray = pad + (usableH - totalCmH * sc) / 2;
 
@@ -795,87 +718,57 @@ function computeDieline(st) {
         panels[`${prefix}_back`] = { x: bx, y: oy, w: sL, h: sH, label: 'ЗАД' };
         panels[`${prefix}_left`] = { x: ox, y: by, w: sH, h: sW, label: 'ЛЕВО' };
         panels[`${prefix}_right`] = { x: bx + sL, y: by, w: sH, h: sW, label: 'ПРАВО' };
-
-        // Outer cut contour
         cutPaths.push([
           [bx, oy], [bx + sL, oy], [bx + sL, by], [bx + sL + sH, by],
           [bx + sL + sH, by + sW], [bx + sL, by + sW], [bx + sL, by + sW + sH],
           [bx, by + sW + sH], [bx, by + sW], [ox, by + sW], [ox, by], [bx, by], [bx, oy]
         ]);
-        // Crease lines
-        creasePaths.push([[bx, by], [bx + sL, by]]);
-        creasePaths.push([[bx, by + sW], [bx + sL, by + sW]]);
-        creasePaths.push([[bx, by], [bx, by + sW]]);
-        creasePaths.push([[bx + sL, by], [bx + sL, by + sW]]);
+        creasePaths.push([[bx, by], [bx + sL, by]], [[bx, by + sW], [bx + sL, by + sW]], [[bx, by], [bx, by + sW]], [[bx + sL, by], [bx + sL, by + sW]]);
       };
-
       makeBoxNet('tray', L, W, H, oxTray, oyTray);
-      const oyLid = oyTray + (trayTotalH + gapCm) * sc;
-      const oxLid = pad + (usableW - lidTotalW * sc) / 2;
-      makeBoxNet('lid', lidL, lidW, lidH, oxLid, oyLid);
+      makeBoxNet('lid', lidL, lidW, lidH, pad + (usableW - lidTotalW * sc) / 2, oyTray + (trayTotalH + gapCm) * sc);
       meta = { sc, lidH, lidL, lidW };
     } else {
-      // FEFCO 0201
       const flapH = W * 0.5;
-      const totalCmW = 2 * L + 2 * W;
-      const totalCmH = H + 2 * flapH;
+      const totalCmW = 2 * L + 2 * W, totalCmH = H + 2 * flapH;
       const sc = Math.min(usableW / totalCmW, usableH / totalCmH);
-      const ox = pad + (usableW - totalCmW * sc) / 2;
-      const oy = pad + (usableH - totalCmH * sc) / 2;
+      const ox = pad + (usableW - totalCmW * sc) / 2, oy = pad + (usableH - totalCmH * sc) / 2;
       const sL = L * sc, sW = W * sc, sH = H * sc, sF = flapH * sc;
-
-      const yWall = oy + sF;
-      const x1 = ox, x2 = ox + sW, x3 = x2 + sL, x4 = x3 + sW;
+      const yWall = oy + sF, x1 = ox, x2 = ox + sW, x3 = x2 + sL, x4 = x3 + sW;
       panels.left = { x: x1, y: yWall, w: sW, h: sH, label: 'БОК Л' };
       panels.front = { x: x2, y: yWall, w: sL, h: sH, label: 'ПЕРЕД' };
       panels.right = { x: x3, y: yWall, w: sW, h: sH, label: 'БОК П' };
       panels.back = { x: x4, y: yWall, w: sL, h: sH, label: 'ЗАД' };
-
       panels.flap_top_L = { x: x1, y: oy, w: sW, h: sF, label: '' };
       panels.flap_top_F = { x: x2, y: oy, w: sL, h: sF, label: 'КЛАПАН' };
       panels.flap_top_R = { x: x3, y: oy, w: sW, h: sF, label: '' };
       panels.flap_top_B = { x: x4, y: oy, w: sL, h: sF, label: 'КЛАПАН' };
       panels.bottom = { x: x2, y: yWall + sH, w: sL, h: sF, label: 'ДНО' };
-
-      cutPaths.push([
-        [ox, oy], [ox + totalCmW * sc, oy],
-        [ox + totalCmW * sc, yWall + sH + sF], [ox, yWall + sH + sF], [ox, oy]
-      ]);
-      // Vertical cuts between flaps
+      cutPaths.push([[ox, oy], [ox + totalCmW * sc, oy], [ox + totalCmW * sc, yWall + sH + sF], [ox, yWall + sH + sF], [ox, oy]]);
       for (const x of [x2, x3, x4]) {
-        cutPaths.push([[x, oy], [x, yWall]]);
-        cutPaths.push([[x, yWall + sH], [x, yWall + sH + sF]]);
+        cutPaths.push([[x, oy], [x, yWall]], [[x, yWall + sH], [x, yWall + sH + sF]]);
         creasePaths.push([[x, yWall], [x, yWall + sH]]);
       }
-      creasePaths.push([[ox, yWall], [ox + totalCmW * sc, yWall]]);
-      creasePaths.push([[ox, yWall + sH], [ox + totalCmW * sc, yWall + sH]]);
+      creasePaths.push([[ox, yWall], [ox + totalCmW * sc, yWall]], [[ox, yWall + sH], [ox + totalCmW * sc, yWall + sH]]);
       meta = { sc, flapH };
     }
   } else if (st.productType === 'pot_box') {
     const { potL: L, potW: W, potH: H } = st.dims;
-    const totalCmW = L + 2 * H;
-    const totalCmH = W + 2 * H;
+    const totalCmW = L + 2 * H, totalCmH = W + 2 * H;
     const sc = Math.min(usableW / totalCmW, usableH / totalCmH);
-    const ox = pad + (usableW - totalCmW * sc) / 2;
-    const oy = pad + (usableH - totalCmH * sc) / 2;
-    const sL = L * sc, sW = W * sc, sH = H * sc;
-    const bx = ox + sH, by = oy + sH;
-
+    const ox = pad + (usableW - totalCmW * sc) / 2, oy = pad + (usableH - totalCmH * sc) / 2;
+    const sL = L * sc, sW = W * sc, sH = H * sc, bx = ox + sH, by = oy + sH;
     panels.bottom = { x: bx, y: by, w: sL, h: sW, label: 'ДНО' };
     panels.front = { x: bx, y: by + sW, w: sL, h: sH, label: 'ПЕРЕД' };
     panels.back = { x: bx, y: oy, w: sL, h: sH, label: 'ЗАД' };
     panels.left = { x: ox, y: by, w: sH, h: sW, label: 'ЛЕВО' };
     panels.right = { x: bx + sL, y: by, w: sH, h: sW, label: 'ПРАВО' };
-
     cutPaths.push([
       [bx, oy], [bx + sL, oy], [bx + sL, by], [bx + sL + sH, by],
       [bx + sL + sH, by + sW], [bx + sL, by + sW], [bx + sL, by + sW + sH],
       [bx, by + sW + sH], [bx, by + sW], [ox, by + sW], [ox, by], [bx, by], [bx, oy]
     ]);
-    creasePaths.push([[bx, by], [bx + sL, by]]);
-    creasePaths.push([[bx, by + sW], [bx + sL, by + sW]]);
-    creasePaths.push([[bx, by], [bx, by + sW]]);
-    creasePaths.push([[bx + sL, by], [bx + sL, by + sW]]);
+    creasePaths.push([[bx, by], [bx + sL, by]], [[bx, by + sW], [bx + sL, by + sW]], [[bx, by], [bx, by + sW]], [[bx + sL, by], [bx + sL, by + sW]]);
     meta = { sc };
   } else if (st.productType === 'cone_sleeve') {
     const { coneTop: Wt, coneBot: Wb, coneH: H } = st.dims;
@@ -883,95 +776,56 @@ function computeDieline(st) {
     const Ct = 2 * safeTop, Cb = 2 * Wb;
     const rTop = safeTop / Math.PI, rBot = Wb / Math.PI;
     const slant = Math.sqrt(H * H + (rTop - rBot) * (rTop - rBot));
-    const R1 = slant * (Cb / (Ct - Cb));
-    const R2 = R1 + slant;
-    const theta = (Ct - Cb) / slant;
-    const halfT = theta / 2;
-
-    // Bounding box of annulus sector (centered vertically, opening upwards)
-    const minX = -R2 * Math.sin(Math.min(halfT, Math.PI / 2));
-    const maxX = R2 * Math.sin(Math.min(halfT, Math.PI / 2));
-    const minY = R1 * Math.cos(halfT);
-    const maxY = R2;
-    const spanW = maxX - minX;
-    const spanH = maxY - minY;
-    const sc = Math.min(usableW / spanW, usableH / spanH);
-
-    const apexX = TEX_W / 2;
-    const apexY = pad + (usableH - spanH * sc) / 2 + maxY * sc;
-
-    // Construct sector polygon
+    const R1 = slant * (Cb / (Ct - Cb)), R2 = R1 + slant, theta = (Ct - Cb) / slant, halfT = theta / 2;
+    const minX = -R2 * Math.sin(Math.min(halfT, Math.PI / 2)), maxX = R2 * Math.sin(Math.min(halfT, Math.PI / 2));
+    const minY = R1 * Math.cos(halfT), maxY = R2;
+    const sc = Math.min(usableW / (maxX - minX), usableH / (maxY - minY));
+    const apexX = TEX_W / 2, apexY = pad + (usableH - (maxY - minY) * sc) / 2 + maxY * sc;
     const ptsTop = [], ptsBot = [];
-    const steps = 40;
-    for (let i = 0; i <= steps; i++) {
-      const a = -halfT + (i / steps) * theta;
+    for (let i = 0; i <= 40; i++) {
+      const a = -halfT + (i / 40) * theta;
       ptsTop.push([apexX + R2 * sc * Math.sin(a), apexY - R2 * sc * Math.cos(a)]);
       ptsBot.push([apexX + R1 * sc * Math.sin(a), apexY - R1 * sc * Math.cos(a)]);
     }
     cutPaths.push([...ptsTop, ...ptsBot.reverse(), ptsTop[0]]);
-
-    // Crease lines showing front face borders (quarter & 3-quarter circumference)
     for (const frac of [-0.25, 0.25]) {
       const a = frac * theta;
-      creasePaths.push([
-        [apexX + R1 * sc * Math.sin(a), apexY - R1 * sc * Math.cos(a)],
-        [apexX + R2 * sc * Math.sin(a), apexY - R2 * sc * Math.cos(a)],
-      ]);
+      creasePaths.push([[apexX + R1 * sc * Math.sin(a), apexY - R1 * sc * Math.cos(a)], [apexX + R2 * sc * Math.sin(a), apexY - R2 * sc * Math.cos(a)]]);
     }
     annotations.push({ x: apexX, y: apexY - ((R1 + R2) * 0.5) * sc, text: 'ЛИЦЕВАЯ ЗОНА КОНУСА' });
     meta = { sc, apexX, apexY, R1, R2, theta };
   } else if (st.productType === 'bouquet_bag') {
     const { bagWTop: Wt, bagWBot: Wb, bagD: D, bagH: H } = st.dims;
-    const totalCmW = 2 * Wt + 2 * D;
-    const totalCmH = H + D;
+    const totalCmW = 2 * Wt + 2 * D, totalCmH = H + D;
     const sc = Math.min(usableW / totalCmW, usableH / totalCmH);
-    const ox = pad + (usableW - totalCmW * sc) / 2;
-    const oy = pad + (usableH - totalCmH * sc) / 2;
-
-    const sWt = Wt * sc, sWb = Wb * sc, sD = D * sc, sH = H * sc;
-    const dx = (sWt - sWb) / 2;
-    // 4 panels in row: Left(D), Front(trap), Right(D), Back(trap)
+    const ox = pad + (usableW - totalCmW * sc) / 2, oy = pad + (usableH - totalCmH * sc) / 2;
+    const sWt = Wt * sc, sWb = Wb * sc, sD = D * sc, sH = H * sc, dx = (sWt - sWb) / 2;
     const xL = ox, xF = ox + sD, xR = xF + sWt, xB = xR + sD;
-
     panels.left = { x: xL, y: oy, w: sD, h: sH, label: 'БОК Л' };
     panels.front = { x: xF, y: oy, w: sWt, h: sH, label: 'ПЕРЕД' };
     panels.right = { x: xR, y: oy, w: sD, h: sH, label: 'БОК П' };
     panels.back = { x: xB, y: oy, w: sWt, h: sH, label: 'ЗАД' };
     panels.bottom = { x: xF + dx, y: oy + sH, w: sWb, h: sD, label: 'ДНО' };
-
-    // Outline
-    cutPaths.push([[xL, oy], [xB + sWt, oy]]);
-    cutPaths.push([[xL, oy], [xL, oy + sH], [xF + dx, oy + sH], [xF + dx, oy + sH + sD], [xF + dx + sWb, oy + sH + sD], [xF + dx + sWb, oy + sH], [xB + sWt, oy + sH], [xB + sWt, oy]]);
-    creasePaths.push([[xF, oy], [xF + dx, oy + sH]]);
-    creasePaths.push([[xR, oy], [xR - dx, oy + sH]]);
-    creasePaths.push([[xB, oy], [xB + dx, oy + sH]]);
-    creasePaths.push([[xF + dx, oy + sH], [xF + dx + sWb, oy + sH]]);
+    cutPaths.push([[xL, oy], [xB + sWt, oy]], [[xL, oy], [xL, oy + sH], [xF + dx, oy + sH], [xF + dx, oy + sH + sD], [xF + dx + sWb, oy + sH + sD], [xF + dx + sWb, oy + sH], [xB + sWt, oy + sH], [xB + sWt, oy]]);
+    creasePaths.push([[xF, oy], [xF + dx, oy + sH]], [[xR, oy], [xR - dx, oy + sH]], [[xB, oy], [xB + dx, oy + sH]], [[xF + dx, oy + sH], [xF + dx + sWb, oy + sH]]);
     meta = { sc, dx };
   } else if (st.productType === 'wrap_sheet') {
-    const cmW = 70, cmH = 50;
-    const sc = Math.min(usableW / cmW, usableH / cmH);
-    const w = cmW * sc, h = cmH * sc;
-    const ox = pad + (usableW - w) / 2, oy = pad + (usableH - h) / 2;
+    const sc = Math.min(usableW / 70, usableH / 50);
+    const w = 70 * sc, h = 50 * sc, ox = pad + (usableW - w) / 2, oy = pad + (usableH - h) / 2;
     panels.sheet = { x: ox, y: oy, w, h, label: 'ЛИСТ УПАКОВКИ 70 × 50 СМ' };
     cutPaths.push([[ox, oy], [ox + w, oy], [ox + w, oy + h], [ox, oy + h], [ox, oy]]);
     meta = { sc };
   } else if (st.productType === 'ribbon') {
-    const rwCm = st.dims.ribbonWidthMm / 10;
-    const stripLenCm = 30;
-    const sc = usableW / stripLenCm;
-    const w = stripLenCm * sc;
-    const h = Math.max(90, rwCm * sc * 2.2);
-    const ox = pad, oy = (TEX_H - h) / 2;
+    const rwCm = st.dims.ribbonWidthMm / 10, sc = usableW / 30;
+    const w = 30 * sc, h = Math.max(90, rwCm * sc * 2.2), ox = pad, oy = (TEX_H - h) / 2;
     panels.ribbon = { x: ox, y: oy, w, h, label: `РАППОРТ ЛЕНТЫ (${st.dims.ribbonWidthMm} мм × 30 см)` };
     cutPaths.push([[ox, oy], [ox + w, oy], [ox + w, oy + h], [ox, oy + h], [ox, oy]]);
     meta = { sc };
   }
-
   return { panels, cutPaths, creasePaths, annotations, meta };
 }
-
-// =========================================================
-// 4. 2D DESIGN RENDERING + PBR MAP GENERATION
+// >>> КОНЕЦ ЧАСТИ 1: ДАЛЬШЕ ВСТАВЬТЕ ЧАСТЬ 2 <<<// =========================================================
+// 4. 2D DESIGN RENDERING, QR DRAWING & PBR MAP GENERATION
 // =========================================================
 const colorCanvas = document.createElement('canvas');
 colorCanvas.width = TEX_W; colorCanvas.height = TEX_H;
@@ -1011,82 +865,53 @@ function drawIconPath(ctx, iconId, size) {
   ctx.textBaseline = 'middle';
   if (iconId === 'flower') {
     for (let i = 0; i < 6; i++) {
-      ctx.save();
-      ctx.rotate((i * Math.PI) / 3);
-      ctx.beginPath();
-      ctx.ellipse(0, -s * 0.55, s * 0.28, s * 0.48, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.save(); ctx.rotate((i * Math.PI) / 3);
+      ctx.beginPath(); ctx.ellipse(0, -s * 0.55, s * 0.28, s * 0.48, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
-    ctx.beginPath();
-    ctx.arc(0, 0, s * 0.24, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, s * 0.24, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.fill();
   } else if (iconId === 'orchid') {
-    // 5-petal orchid silhouette
-    const angles = [0, 1.15, -1.15, 2.45, -2.45];
-    angles.forEach((a, idx) => {
-      ctx.save();
-      ctx.rotate(a);
-      ctx.beginPath();
-      ctx.ellipse(0, -s * 0.55, idx < 3 && idx > 0 ? s * 0.36 : s * 0.26, s * 0.5, 0, 0, Math.PI * 2);
-      ctx.fill();
+    [0, 1.15, -1.15, 2.45, -2.45].forEach((a, idx) => {
+      ctx.save(); ctx.rotate(a);
+      ctx.beginPath(); ctx.ellipse(0, -s * 0.55, idx < 3 && idx > 0 ? s * 0.36 : s * 0.26, s * 0.5, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     });
-    ctx.beginPath();
-    ctx.ellipse(0, s * 0.16, s * 0.22, s * 0.26, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, s * 0.16, s * 0.22, s * 0.26, 0, 0, Math.PI * 2); ctx.fill();
   } else if (iconId === 'up') {
-    ctx.lineWidth = s * 0.12;
-    ctx.strokeStyle = ctx.fillStyle;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.65, s * 0.75); ctx.lineTo(s * 0.65, s * 0.75);
+    ctx.lineWidth = s * 0.12; ctx.strokeStyle = ctx.fillStyle;
+    ctx.beginPath(); ctx.moveTo(-s * 0.65, s * 0.75); ctx.lineTo(s * 0.65, s * 0.75);
     for (const xOff of [-s * 0.35, s * 0.35]) {
       ctx.moveTo(xOff, s * 0.5); ctx.lineTo(xOff, -s * 0.65);
       ctx.moveTo(xOff - s * 0.22, -s * 0.35); ctx.lineTo(xOff, -s * 0.68); ctx.lineTo(xOff + s * 0.22, -s * 0.35);
     }
     ctx.stroke();
   } else if (iconId === 'fragile') {
-    ctx.lineWidth = s * 0.1;
-    ctx.strokeStyle = ctx.fillStyle;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.4, -s * 0.75); ctx.lineTo(s * 0.4, -s * 0.75);
+    ctx.lineWidth = s * 0.1; ctx.strokeStyle = ctx.fillStyle;
+    ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.75); ctx.lineTo(s * 0.4, -s * 0.75);
     ctx.bezierCurveTo(s * 0.45, 0, -s * 0.45, 0, -s * 0.4, -s * 0.75);
     ctx.moveTo(0, -s * 0.05); ctx.lineTo(0, s * 0.7);
     ctx.moveTo(-s * 0.35, s * 0.7); ctx.lineTo(s * 0.35, s * 0.7);
     ctx.stroke();
   } else if (iconId === 'rain') {
-    ctx.lineWidth = s * 0.1;
-    ctx.strokeStyle = ctx.fillStyle;
-    ctx.beginPath();
-    ctx.arc(0, 0, s * 0.7, Math.PI, 0);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, s * 0.65);
-    ctx.arc(-s * 0.16, s * 0.65, s * 0.16, 0, Math.PI);
-    ctx.stroke();
+    ctx.lineWidth = s * 0.1; ctx.strokeStyle = ctx.fillStyle;
+    ctx.beginPath(); ctx.arc(0, 0, s * 0.7, Math.PI, 0); ctx.closePath(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s * 0.65); ctx.arc(-s * 0.16, s * 0.65, s * 0.16, 0, Math.PI); ctx.stroke();
   } else if (iconId === 'eco') {
-    ctx.font = `700 ${s * 1.6}px Inter, sans-serif`;
-    ctx.fillText('♻', 0, 2);
+    ctx.font = `700 ${s * 1.6}px Inter, sans-serif`; ctx.fillText('♻', 0, 2);
   } else if (iconId === 'temp') {
-    ctx.lineWidth = s * 0.09;
-    ctx.strokeStyle = ctx.fillStyle;
+    ctx.lineWidth = s * 0.09; ctx.strokeStyle = ctx.fillStyle;
     ctx.strokeRect(-s * 0.75, -s * 0.75, s * 1.5, s * 1.5);
-    ctx.font = `700 ${s * 0.48}px Inter, sans-serif`;
-    ctx.fillText('+4..+8°C', 0, 2);
+    ctx.font = `700 ${s * 0.48}px Inter, sans-serif`; ctx.fillText('+4..+8°C', 0, 2);
   } else if (iconId === 'heart') {
-    ctx.beginPath();
-    ctx.moveTo(0, s * 0.6);
+    ctx.beginPath(); ctx.moveTo(0, s * 0.6);
     ctx.bezierCurveTo(-s * 1.1, -s * 0.1, -s * 0.6, -s * 0.9, 0, -s * 0.3);
-    ctx.bezierCurveTo(s * 0.6, -s * 0.9, s * 1.1, -s * 0.1, 0, s * 0.6);
-    ctx.fill();
+    ctx.bezierCurveTo(s * 0.6, -s * 0.9, s * 1.1, -s * 0.1, 0, s * 0.6); ctx.fill();
   }
   ctx.restore();
 }
 
 function drawSingleLayer(ctx, layer, mode = 'color') {
-  // mode: 'color' | 'pbr'
   ctx.save();
   let fillHex = layer.color;
   let alpha = layer.opacity;
@@ -1094,20 +919,13 @@ function drawSingleLayer(ctx, layer, mode = 'color') {
   if (mode === 'color') {
     if (layer.finish === 'foil_gold') fillHex = '#e6be53';
     else if (layer.finish === 'foil_silver') fillHex = '#dfe5ec';
-
-    // Simulate missing white underbase on kraft or transparent film
     if (!state.whiteUnderbase && (state.material === 'kraft' || state.material === 'bopp_clear' || state.material === 'frosted_film')) {
       if (layer.finish === 'ink') alpha *= 0.55;
     }
   } else {
-    // PBR canvas: G = roughness (0..255), B = metalness (0..255)
-    if (layer.finish === 'foil_gold' || layer.finish === 'foil_silver') {
-      fillHex = 'rgb(0, 38, 250)'; // very smooth + metallic
-    } else if (layer.finish === 'uv_gloss') {
-      fillHex = 'rgb(0, 18, 0)';   // super glossy + non-metal
-    } else {
-      fillHex = 'rgb(0, 145, 0)';  // standard ink satin
-    }
+    if (layer.finish === 'foil_gold' || layer.finish === 'foil_silver') fillHex = 'rgb(0, 38, 250)';
+    else if (layer.finish === 'uv_gloss') fillHex = 'rgb(0, 18, 0)';
+    else fillHex = 'rgb(0, 145, 0)';
     alpha = layer.opacity > 0.2 ? 1.0 : 0.0;
   }
 
@@ -1128,14 +946,53 @@ function drawSingleLayer(ctx, layer, mode = 'color') {
       ctx.fillText(layer.text, 0, 0);
     } else if (layer.type === 'icon') {
       drawIconPath(ctx, layer.iconId, layer.baseSize || 110);
+    } else if (layer.type === 'qrcode') {
+      const size = layer.baseSize || 170;
+      const qr = qrcode(0, 'M');
+      qr.addData(layer.qrUrl || 'https://florastudio.local');
+      qr.make();
+      const count = qr.getModuleCount();
+      const yShift = layer.qrCaption ? -14 : 0;
+
+      if (layer.hasBgCard) {
+        const pad = 16;
+        const capH = layer.qrCaption ? 28 : 0;
+        const w = size + pad * 2;
+        const h = size + pad * 2 + capH;
+        ctx.save();
+        ctx.fillStyle = mode === 'color' ? '#ffffff' : 'rgb(0, 175, 0)';
+        ctx.beginPath();
+        ctx.roundRect(-w / 2, -h / 2, w, h, 14);
+        ctx.fill();
+        if (mode === 'color') {
+          ctx.strokeStyle = 'rgba(15,23,42,0.14)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      const cell = size / count;
+      const startX = -size / 2;
+      const startY = -size / 2 + yShift;
+      ctx.imageSmoothingEnabled = false;
+      for (let r = 0; r < count; r++) {
+        for (let c = 0; c < count; c++) {
+          if (qr.isDark(r, c)) {
+            ctx.fillRect(startX + c * cell, startY + r * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+      }
+      if (layer.qrCaption && mode === 'color') {
+        ctx.font = '700 17px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(layer.qrCaption, 0, size / 2 + 12 + yShift);
+      }
     } else if (layer.type === 'image' && layer.img) {
       const w = layer.imgW, h = layer.imgH;
-      if (mode === 'color') {
-        ctx.drawImage(layer.img, -w / 2, -h / 2, w, h);
-      } else {
-        // For images with foil/uv finish, tint silhouette on pbr map
-        ctx.fillRect(-w / 2, -h / 2, w, h);
-      }
+      if (mode === 'color') ctx.drawImage(layer.img, -w / 2, -h / 2, w, h);
+      else ctx.fillRect(-w / 2, -h / 2, w, h);
     }
     ctx.restore();
   };
@@ -1154,122 +1011,6 @@ function drawSingleLayer(ctx, layer, mode = 'color') {
   ctx.restore();
 }
 
-function renderAllTextures() {
-  const matVis = getMaterialVisuals(state.material);
-
-  // 1. Base Material & Bg Fill on Color Canvas
-  colorCtx.clearRect(0, 0, TEX_W, TEX_H);
-  if (!matVis.transparent) {
-    colorCtx.fillStyle = state.bgFillEnabled ? state.bgFillColor : matVis.baseHex;
-    colorCtx.fillRect(0, 0, TEX_W, TEX_H);
-  } else {
-    // Semi-transparent film or tissue
-    if (state.bgFillEnabled) {
-      colorCtx.fillStyle = state.bgFillColor;
-      colorCtx.globalAlpha = Math.max(matVis.alpha, 0.72);
-      colorCtx.fillRect(0, 0, TEX_W, TEX_H);
-      colorCtx.globalAlpha = 1;
-    } else {
-      colorCtx.fillStyle = matVis.baseHex;
-      colorCtx.globalAlpha = matVis.alpha;
-      colorCtx.fillRect(0, 0, TEX_W, TEX_H);
-      colorCtx.globalAlpha = 1;
-    }
-  }
-
-  // Subtle kraft fiber dots
-  if (state.material === 'kraft' && !state.bgFillEnabled) {
-    colorCtx.fillStyle = 'rgba(70, 45, 20, 0.08)';
-    for (let i = 0; i < 650; i++) {
-      colorCtx.fillRect((i * 73) % TEX_W, (i * 197) % TEX_H, 3, 1.5);
-    }
-  }
-
-  // 2. Base PBR Canvas (G = roughness, B = metalness)
-  pbrCtx.fillStyle = `rgb(0, ${matVis.roughG}, 0)`;
-  pbrCtx.fillRect(0, 0, TEX_W, TEX_H);
-
-  // 3. Draw Design Layers onto both Color & PBR canvases
-  for (const layer of state.layers) {
-    drawSingleLayer(colorCtx, layer, 'color');
-    drawSingleLayer(pbrCtx, layer, 'pbr');
-  }
-
-  colorTex.needsUpdate = true;
-  pbrTex.needsUpdate = true;
-
-  // 4. Render 2D Editor View (Artwork + Dieline overlay + Selection box)
-  edCtx.clearRect(0, 0, TEX_W, TEX_H);
-  // Checkerboard behind transparent films in 2D view
-  if (matVis.transparent) {
-    edCtx.fillStyle = '#1e2430';
-    edCtx.fillRect(0, 0, TEX_W, TEX_H);
-    edCtx.fillStyle = '#283040';
-    for (let y = 0; y < TEX_H; y += 32) {
-      for (let x = (y % 64 === 0 ? 0 : 32); x < TEX_W; x += 64) {
-        edCtx.fillRect(x, y, 32, 32);
-      }
-    }
-  }
-  edCtx.drawImage(colorCanvas, 0, 0);
-
-  // Draw Dieline guides
-  if (currentDieline) {
-    edCtx.save();
-    // Crease lines (dashed cyan)
-    edCtx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
-    edCtx.lineWidth = 2.5;
-    edCtx.setLineDash([12, 8]);
-    for (const seg of currentDieline.creasePaths) {
-      edCtx.beginPath();
-      seg.forEach(([x, y], i) => i === 0 ? edCtx.moveTo(x, y) : edCtx.lineTo(x, y));
-      edCtx.stroke();
-    }
-
-    // Cut lines (solid rose)
-    edCtx.strokeStyle = 'rgba(251, 113, 133, 0.95)';
-    edCtx.lineWidth = 3;
-    edCtx.setLineDash([]);
-    for (const seg of currentDieline.cutPaths) {
-      edCtx.beginPath();
-      seg.forEach(([x, y], i) => i === 0 ? edCtx.moveTo(x, y) : edCtx.lineTo(x, y));
-      edCtx.stroke();
-    }
-
-    // Panel labels
-    edCtx.fillStyle = 'rgba(15, 23, 42, 0.55)';
-    edCtx.font = '600 18px Inter, sans-serif';
-    edCtx.textAlign = 'center';
-    edCtx.textBaseline = 'middle';
-    for (const p of Object.values(currentDieline.panels)) {
-      if (p.label) {
-        edCtx.fillText(p.label, p.x + p.w / 2, p.y + 20);
-      }
-    }
-    for (const a of currentDieline.annotations) {
-      edCtx.fillText(a.text, a.x, a.y);
-    }
-
-    // Selected layer bounding box
-    const sel = state.layers.find(l => l.id === state.selectedLayerId);
-    if (sel && !sel.repeatPattern) {
-      const box = getLayerBounds(sel);
-      edCtx.translate(sel.x, sel.y);
-      edCtx.rotate((sel.rotation * Math.PI) / 180);
-      edCtx.strokeStyle = '#10b981';
-      edCtx.lineWidth = 2.5;
-      edCtx.setLineDash([6, 4]);
-      edCtx.strokeRect(-box.w / 2, -box.h / 2, box.w, box.h);
-      edCtx.setLineDash([]);
-      edCtx.fillStyle = '#10b981';
-      edCtx.fillRect(box.w / 2 - 8, box.h / 2 - 8, 16, 16);
-    }
-    edCtx.restore();
-  }
-
-  updatePreflightBanner();
-}
-
 function getLayerBounds(layer) {
   let bw = 120, bh = 120;
   if (layer.type === 'text') {
@@ -1278,6 +1019,10 @@ function getLayerBounds(layer) {
     bh = layer.fontSize * 1.25;
   } else if (layer.type === 'icon') {
     bw = bh = (layer.baseSize || 110);
+  } else if (layer.type === 'qrcode') {
+    const s = (layer.baseSize || 170) + (layer.hasBgCard ? 32 : 0);
+    bw = s;
+    bh = s + (layer.qrCaption ? 28 : 0);
   } else if (layer.type === 'image') {
     bw = layer.imgW; bh = layer.imgH;
   }
@@ -1303,6 +1048,94 @@ function updatePreflightBanner() {
     box.className = 'preflight-box preflight-ok';
     box.textContent = `✓ ${state.printMethod === 'silk' ? 'Шелкография' : 'CMYK Офсет'}: макет готов к печати.`;
   }
+}
+
+function renderAllTextures() {
+  const matVis = getMaterialVisuals(state.material);
+
+  colorCtx.clearRect(0, 0, TEX_W, TEX_H);
+  if (!matVis.transparent) {
+    colorCtx.fillStyle = state.bgFillEnabled ? state.bgFillColor : matVis.baseHex;
+    colorCtx.fillRect(0, 0, TEX_W, TEX_H);
+  } else {
+    colorCtx.fillStyle = state.bgFillEnabled ? state.bgFillColor : matVis.baseHex;
+    colorCtx.globalAlpha = state.bgFillEnabled ? Math.max(matVis.alpha, 0.72) : matVis.alpha;
+    colorCtx.fillRect(0, 0, TEX_W, TEX_H);
+    colorCtx.globalAlpha = 1;
+  }
+
+  if (state.material === 'kraft' && !state.bgFillEnabled) {
+    colorCtx.fillStyle = 'rgba(70, 45, 20, 0.08)';
+    for (let i = 0; i < 650; i++) colorCtx.fillRect((i * 73) % TEX_W, (i * 197) % TEX_H, 3, 1.5);
+  }
+
+  pbrCtx.fillStyle = `rgb(0, ${matVis.roughG}, 0)`;
+  pbrCtx.fillRect(0, 0, TEX_W, TEX_H);
+
+  for (const layer of state.layers) {
+    drawSingleLayer(colorCtx, layer, 'color');
+    drawSingleLayer(pbrCtx, layer, 'pbr');
+  }
+
+  colorTex.needsUpdate = true;
+  pbrTex.needsUpdate = true;
+
+  edCtx.clearRect(0, 0, TEX_W, TEX_H);
+  if (matVis.transparent) {
+    edCtx.fillStyle = '#1e2430';
+    edCtx.fillRect(0, 0, TEX_W, TEX_H);
+    edCtx.fillStyle = '#283040';
+    for (let y = 0; y < TEX_H; y += 32) {
+      for (let x = (y % 64 === 0 ? 0 : 32); x < TEX_W; x += 64) edCtx.fillRect(x, y, 32, 32);
+    }
+  }
+  edCtx.drawImage(colorCanvas, 0, 0);
+
+  if (currentDieline) {
+    edCtx.save();
+    edCtx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
+    edCtx.lineWidth = 2.5;
+    edCtx.setLineDash([12, 8]);
+    for (const seg of currentDieline.creasePaths) {
+      edCtx.beginPath();
+      seg.forEach(([x, y], i) => i === 0 ? edCtx.moveTo(x, y) : edCtx.lineTo(x, y));
+      edCtx.stroke();
+    }
+
+    edCtx.strokeStyle = 'rgba(251, 113, 133, 0.95)';
+    edCtx.lineWidth = 3;
+    edCtx.setLineDash([]);
+    for (const seg of currentDieline.cutPaths) {
+      edCtx.beginPath();
+      seg.forEach(([x, y], i) => i === 0 ? edCtx.moveTo(x, y) : edCtx.lineTo(x, y));
+      edCtx.stroke();
+    }
+
+    edCtx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+    edCtx.font = '600 18px Inter, sans-serif';
+    edCtx.textAlign = 'center';
+    edCtx.textBaseline = 'middle';
+    for (const p of Object.values(currentDieline.panels)) {
+      if (p.label) edCtx.fillText(p.label, p.x + p.w / 2, p.y + 20);
+    }
+    for (const a of currentDieline.annotations) edCtx.fillText(a.text, a.x, a.y);
+
+    const sel = state.layers.find(l => l.id === state.selectedLayerId);
+    if (sel && !sel.repeatPattern) {
+      const box = getLayerBounds(sel);
+      edCtx.translate(sel.x, sel.y);
+      edCtx.rotate((sel.rotation * Math.PI) / 180);
+      edCtx.strokeStyle = '#10b981';
+      edCtx.lineWidth = 2.5;
+      edCtx.setLineDash([6, 4]);
+      edCtx.strokeRect(-box.w / 2, -box.h / 2, box.w, box.h);
+      edCtx.setLineDash([]);
+      edCtx.fillStyle = '#10b981';
+      edCtx.fillRect(box.w / 2 - 8, box.h / 2 - 8, 16, 16);
+    }
+    edCtx.restore();
+  }
+  updatePreflightBanner();
 }
 
 // =========================================================
@@ -1332,7 +1165,6 @@ scene.environmentIntensity = 0.75;
 
 const procTex = createProceduralTextures();
 
-// Lights & Floor
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
 scene.add(ambientLight);
 
@@ -1342,9 +1174,8 @@ dirLight.castShadow = true;
 dirLight.shadow.mapSize.set(2048, 2048);
 dirLight.shadow.camera.near = 1;
 dirLight.shadow.camera.far = 25;
-const d = 5;
-dirLight.shadow.camera.left = -d; dirLight.shadow.camera.right = d;
-dirLight.shadow.camera.top = d; dirLight.shadow.camera.bottom = -d;
+dirLight.shadow.camera.left = -5; dirLight.shadow.camera.right = 5;
+dirLight.shadow.camera.top = 5; dirLight.shadow.camera.bottom = -5;
 dirLight.shadow.bias = -0.0005;
 scene.add(dirLight);
 
@@ -1354,14 +1185,9 @@ floorMesh.rotation.x = -Math.PI / 2;
 floorMesh.receiveShadow = true;
 scene.add(floorMesh);
 
-// Shared Packaging Materials
 const outerMat = new THREE.MeshPhysicalMaterial({
-  map: colorTex,
-  roughnessMap: pbrTex,
-  metalnessMap: pbrTex,
-  roughness: 1.0,
-  metalness: 1.0,
-  side: THREE.DoubleSide,
+  map: colorTex, roughnessMap: pbrTex, metalnessMap: pbrTex,
+  roughness: 1.0, metalness: 1.0, side: THREE.DoubleSide,
 });
 const innerMat = new THREE.MeshStandardMaterial({ color: 0xb48a5a, roughness: 0.9, side: THREE.DoubleSide });
 const edgeMat = new THREE.MeshStandardMaterial({ map: procTex.fluteTex, roughness: 0.95 });
@@ -1379,22 +1205,15 @@ function updateMaterialsConfig() {
   outerMat.sheenRoughness = 0.3;
   outerMat.sheenColor.set(0xffffff);
 
-  if (matVis.bump === 'paper') {
-    outerMat.bumpMap = procTex.paperBumpTex;
-    outerMat.bumpScale = 0.008;
-  } else if (matVis.bump === 'crinkle') {
-    outerMat.bumpMap = procTex.crinkleBumpTex;
-    outerMat.bumpScale = 0.035;
-  } else {
-    outerMat.bumpMap = null;
-  }
+  if (matVis.bump === 'paper') { outerMat.bumpMap = procTex.paperBumpTex; outerMat.bumpScale = 0.008; }
+  else if (matVis.bump === 'crinkle') { outerMat.bumpMap = procTex.crinkleBumpTex; outerMat.bumpScale = 0.035; }
+  else outerMat.bumpMap = null;
   outerMat.needsUpdate = true;
 
   innerMat.color.set(matVis.baseHex);
   innerMat.transparent = matVis.transparent;
   innerMat.opacity = matVis.transparent ? matVis.alpha : 1.0;
   innerMat.needsUpdate = true;
-
   edgeMat.color.set(state.material === 'kraft' ? 0xffffff : 0xf1f5f9);
 }
 
@@ -1402,60 +1221,34 @@ function updateSceneEnvironment() {
   const bg = state.sceneBg;
   floorMat.map = null;
   if (bg === 'studio') {
-    scene.background = new THREE.Color('#eef2f6');
-    floorMat.color.set('#e2e8f0');
-    floorMat.roughness = 0.85;
-    ambientLight.intensity = 0.65;
-    dirLight.color.set(0xffffff);
+    scene.background = new THREE.Color('#eef2f6'); floorMat.color.set('#e2e8f0'); floorMat.roughness = 0.85;
+    ambientLight.intensity = 0.65; dirLight.color.set(0xffffff);
   } else if (bg === 'showroom') {
-    scene.background = new THREE.Color('#11151d');
-    floorMat.color.set('#181d27');
-    floorMat.roughness = 0.35;
-    ambientLight.intensity = 0.35;
-    dirLight.color.set(0xfff5e4);
+    scene.background = new THREE.Color('#11151d'); floorMat.color.set('#181d27'); floorMat.roughness = 0.35;
+    ambientLight.intensity = 0.35; dirLight.color.set(0xfff5e4);
   } else if (bg === 'table') {
-    scene.background = new THREE.Color('#d6ccc2');
-    floorMat.map = procTex.woodTex;
-    floorMat.color.set('#ffffff');
-    floorMat.roughness = 0.72;
-    ambientLight.intensity = 0.55;
-    dirLight.color.set(0xfff0db);
+    scene.background = new THREE.Color('#d6ccc2'); floorMat.map = procTex.woodTex; floorMat.color.set('#ffffff'); floorMat.roughness = 0.72;
+    ambientLight.intensity = 0.55; dirLight.color.set(0xfff0db);
   } else if (bg === 'greenhouse') {
-    scene.background = new THREE.Color('#d8eadc');
-    floorMat.color.set('#b7cbbd');
-    floorMat.roughness = 0.9;
-    ambientLight.intensity = 0.75;
-    dirLight.color.set(0xf4fff5);
+    scene.background = new THREE.Color('#d8eadc'); floorMat.color.set('#b7cbbd'); floorMat.roughness = 0.9;
+    ambientLight.intensity = 0.75; dirLight.color.set(0xf4fff5);
   } else if (bg === 'warehouse') {
-    scene.background = new THREE.Color('#94a3b8');
-    floorMat.color.set('#64748b');
-    floorMat.roughness = 0.92;
-    ambientLight.intensity = 0.5;
-    dirLight.color.set(0xf8fafc);
+    scene.background = new THREE.Color('#94a3b8'); floorMat.color.set('#64748b'); floorMat.roughness = 0.92;
+    ambientLight.intensity = 0.5; dirLight.color.set(0xf8fafc);
   }
   floorMat.needsUpdate = true;
 }
 
-// Helper: Extruded cardboard panel with exact UV mapping to a 2D dieline rectangle
 function createPanelMesh(wCm, hCm, thick, panelRect, options = {}) {
-  const w = wCm * CM_SCALE;
-  const h = hCm * CM_SCALE;
+  const w = wCm * CM_SCALE, h = hCm * CM_SCALE;
   const shape = new THREE.Shape();
-  shape.moveTo(0, 0);
-  shape.lineTo(w, 0);
-  shape.lineTo(w, h);
-  shape.lineTo(0, h);
-  shape.closePath();
+  shape.moveTo(0, 0); shape.lineTo(w, 0); shape.lineTo(w, h); shape.lineTo(0, h); shape.closePath();
 
-  // Optional oval hand/vent hole
   if (options.handHole && w > 0.6 && h > 0.45) {
     const hole = new THREE.Path();
-    const hw = Math.min(0.28, w * 0.28), hh = Math.min(0.11, h * 0.16);
-    hole.absellipse(w / 2, h * 0.72, hw, hh, 0, Math.PI * 2, true, 0);
+    hole.absellipse(w / 2, h * 0.72, Math.min(0.28, w * 0.28), Math.min(0.11, h * 0.16), 0, Math.PI * 2, true, 0);
     shape.holes.push(hole);
   }
-
-  // Optional grid of circular holes (for pot insert)
   if (options.potHoles) {
     for (const ph of options.potHoles) {
       const hole = new THREE.Path();
@@ -1464,44 +1257,28 @@ function createPanelMesh(wCm, hCm, thick, panelRect, options = {}) {
     }
   }
 
-  const geom = new THREE.ExtrudeGeometry(shape, {
-    depth: thick,
-    bevelEnabled: false,
-    curveSegments: 24,
-  });
-
-  // Map UVs of front/back faces to panelRect on TEX_W x TEX_H
-  const pos = geom.attributes.position;
-  const norm = geom.attributes.normal;
-  const uv = geom.attributes.uv;
-
+  const geom = new THREE.ExtrudeGeometry(shape, { depth: thick, bevelEnabled: false, curveSegments: 24 });
+  const pos = geom.attributes.position, norm = geom.attributes.normal, uv = geom.attributes.uv;
   const u0 = panelRect ? panelRect.x / TEX_W : 0;
   const u1 = panelRect ? (panelRect.x + panelRect.w) / TEX_W : 1;
   const vTop = panelRect ? 1 - panelRect.y / TEX_H : 1;
   const vBot = panelRect ? 1 - (panelRect.y + panelRect.h) / TEX_H : 0;
 
   geom.clearGroups();
-  const triCount = pos.count / 3;
-  // ExtrudeGeometry in Three.js is non-indexed
   for (let i = 0; i < pos.count; i++) {
-    const nz = norm.getZ(i);
-    if (Math.abs(nz) > 0.5) {
-      const lx = pos.getX(i) / w;
-      const ly = pos.getY(i) / h;
-      uv.setXY(i, u0 + lx * (u1 - u0), vBot + ly * (vTop - vBot));
+    if (Math.abs(norm.getZ(i)) > 0.5) {
+      uv.setXY(i, u0 + (pos.getX(i) / w) * (u1 - u0), vBot + (pos.getY(i) / h) * (vTop - vBot));
     } else {
       uv.setXY(i, (pos.getX(i) + pos.getY(i)) * 2.5, pos.getZ(i) / Math.max(0.001, thick));
     }
   }
-  for (let t = 0; t < triCount; t++) {
+  for (let t = 0; t < pos.count / 3; t++) {
     const nz = norm.getZ(t * 3);
-    const matIdx = nz > 0.5 ? 0 : (nz < -0.5 ? 1 : 2);
-    geom.addGroup(t * 3, 3, matIdx);
+    geom.addGroup(t * 3, 3, nz > 0.5 ? 0 : (nz < -0.5 ? 1 : 2));
   }
   uv.needsUpdate = true;
 
-  const mats = options.allOuter ? [outerMat, outerMat, edgeMat] : [outerMat, innerMat, edgeMat];
-  const mesh = new THREE.Mesh(geom, mats);
+  const mesh = new THREE.Mesh(geom, options.allOuter ? [outerMat, outerMat, edgeMat] : [outerMat, innerMat, edgeMat]);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   return mesh;
@@ -1512,19 +1289,10 @@ function createPanelMesh(wCm, hCm, thick, panelRect, options = {}) {
 // =========================================================
 function createOrchid3D(potDiaCm = 12, heightCm = 48) {
   const g = new THREE.Group();
-  const r = (potDiaCm * 0.5) * CM_SCALE;
-  const ph = (potDiaCm * 0.9) * CM_SCALE;
+  const r = (potDiaCm * 0.5) * CM_SCALE, ph = (potDiaCm * 0.9) * CM_SCALE;
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.78, ph, 24), new THREE.MeshStandardMaterial({ color: 0x3f4a3c, roughness: 0.7 }));
+  pot.position.y = ph / 2; pot.castShadow = true; g.add(pot);
 
-  // Pot
-  const pot = new THREE.Mesh(
-    new THREE.CylinderGeometry(r, r * 0.78, ph, 24),
-    new THREE.MeshStandardMaterial({ color: 0x3f4a3c, roughness: 0.7 })
-  );
-  pot.position.y = ph / 2;
-  pot.castShadow = true;
-  g.add(pot);
-
-  // Broad leaves
   const leafMat = new THREE.MeshStandardMaterial({ color: 0x2f6e38, roughness: 0.35 });
   for (let i = 0; i < 4; i++) {
     const leaf = new THREE.Mesh(new THREE.SphereGeometry(r * 0.75, 12, 8), leafMat);
@@ -1535,7 +1303,6 @@ function createOrchid3D(potDiaCm = 12, heightCm = 48) {
     g.add(leaf);
   }
 
-  // Two flowering spikes
   const hTotal = heightCm * CM_SCALE;
   const stemMat = new THREE.MeshStandardMaterial({ color: 0x3b7a40, roughness: 0.5 });
   const petalMat = new THREE.MeshStandardMaterial({ color: 0xfdf2f8, roughness: 0.4, side: THREE.DoubleSide });
@@ -1548,8 +1315,7 @@ function createOrchid3D(potDiaCm = 12, heightCm = 48) {
       new THREE.Vector3(side * 0.16, ph + hTotal * 0.78, 0.12),
       new THREE.Vector3(side * 0.22, ph + hTotal * 0.72, 0.24),
     ]);
-    const stem = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.015, 6, false), stemMat);
-    g.add(stem);
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.015, 6, false), stemMat));
 
     for (let f = 0; f < 4; f++) {
       const pt = curve.getPoint(0.45 + f * 0.17);
@@ -1577,7 +1343,6 @@ function createBouquet3D(scale = 1.0) {
   const leafMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27, roughness: 0.55 });
   const roseColors = [0xf43f5e, 0xfb7185, 0xfda4af, 0xfff1f2, 0xe11d48];
 
-  // Stems bundle
   for (let i = 0; i < 9; i++) {
     const a = (i / 9) * Math.PI * 2;
     const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.35, 6), stemMat);
@@ -1585,8 +1350,6 @@ function createBouquet3D(scale = 1.0) {
     stem.rotation.set(Math.sin(a) * 0.14, 0, -Math.cos(a) * 0.14);
     g.add(stem);
   }
-
-  // Foliage
   for (let i = 0; i < 10; i++) {
     const a = (i / 10) * Math.PI * 2;
     const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 6), leafMat);
@@ -1595,21 +1358,15 @@ function createBouquet3D(scale = 1.0) {
     leaf.rotation.set(0.4, -a, 0.2);
     g.add(leaf);
   }
-
-  // Flower heads dome
   for (let i = 0; i < 14; i++) {
     const ring = i < 5 ? 0.14 : (i < 13 ? 0.3 : 0);
     const a = i < 5 ? (i / 5) * Math.PI * 2 : ((i - 5) / 8) * Math.PI * 2 + 0.3;
     const y = i === 13 ? 1.38 : (i < 5 ? 1.32 : 1.18);
-    const head = new THREE.Mesh(
-      new THREE.DodecahedronGeometry(0.115, 1),
-      new THREE.MeshStandardMaterial({ color: roseColors[i % roseColors.length], roughness: 0.45 })
-    );
+    const head = new THREE.Mesh(new THREE.DodecahedronGeometry(0.115, 1), new THREE.MeshStandardMaterial({ color: roseColors[i % roseColors.length], roughness: 0.45 }));
     head.position.set(Math.cos(a) * ring, y, Math.sin(a) * ring);
     head.castShadow = true;
     g.add(head);
   }
-
   g.scale.setScalar(scale);
   return g;
 }
@@ -1619,7 +1376,6 @@ function createCutFlowersBoxContent(L_cm, W_cm) {
   const len = L_cm * CM_SCALE * 0.85;
   const stemMat = new THREE.MeshStandardMaterial({ color: 0x3a6b35, roughness: 0.7 });
   const headMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.45 });
-
   for (let r = -1; r <= 1; r++) {
     for (let i = 0; i < 4; i++) {
       const zOff = r * (W_cm * CM_SCALE * 0.24) + (i % 2) * 0.06;
@@ -1628,7 +1384,6 @@ function createCutFlowersBoxContent(L_cm, W_cm) {
       stem.rotation.z = Math.PI / 2;
       stem.position.set(-len * 0.04, yOff, zOff);
       g.add(stem);
-
       const bud = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 8), headMat);
       bud.scale.set(1.25, 0.9, 0.9);
       bud.position.set(len * 0.46, yOff + 0.02, zOff);
@@ -1639,7 +1394,7 @@ function createCutFlowersBoxContent(L_cm, W_cm) {
 }
 
 // =========================================================
-// 7. 3D PACKAGING BUILDER (ALL 6 PRODUCT TYPES)
+// 7. 3D PACKAGING BUILDER
 // =========================================================
 function clearGroup(grp) {
   while (grp.children.length > 0) {
@@ -1652,9 +1407,8 @@ function clearGroup(grp) {
 function buildPackaging3D() {
   clearGroup(packagingGroup);
   updateMaterialsConfig();
-
   const p = currentDieline ? currentDieline.panels : {};
-  const t = 0.018; // cardboard wall thickness
+  const t = 0.018;
   const open = state.openAmount;
 
   if (state.productType === 'cut_box') {
@@ -1663,196 +1417,71 @@ function buildPackaging3D() {
 
     if (boxStyle === 'telescopic') {
       const tray = new THREE.Group();
-      // Bottom
-      const bot = createPanelMesh(L, W, t, p.tray_bottom);
-      bot.rotation.x = -Math.PI / 2;
-      bot.position.set(-sL / 2, 0, sW / 2);
-      tray.add(bot);
-
-      // Front wall
-      const front = createPanelMesh(L, H, t, p.tray_front);
-      front.position.set(-sL / 2, 0, sW / 2);
-      tray.add(front);
-
-      // Back wall
-      const back = createPanelMesh(L, H, t, p.tray_back);
-      back.rotation.y = Math.PI;
-      back.position.set(sL / 2, 0, -sW / 2);
-      tray.add(back);
-
-      // Left & Right walls (with optional hand/vent holes)
-      const left = createPanelMesh(W, H, t, p.tray_left, { handHole: ventHoles });
-      left.rotation.y = -Math.PI / 2;
-      left.position.set(-sL / 2, 0, -sW / 2);
-      tray.add(left);
-
-      const right = createPanelMesh(W, H, t, p.tray_right, { handHole: ventHoles });
-      right.rotation.y = Math.PI / 2;
-      right.position.set(sL / 2, 0, sW / 2);
-      tray.add(right);
-
+      const bot = createPanelMesh(L, W, t, p.tray_bottom); bot.rotation.x = -Math.PI / 2; bot.position.set(-sL / 2, 0, sW / 2); tray.add(bot);
+      const front = createPanelMesh(L, H, t, p.tray_front); front.position.set(-sL / 2, 0, sW / 2); tray.add(front);
+      const back = createPanelMesh(L, H, t, p.tray_back); back.rotation.y = Math.PI; back.position.set(sL / 2, 0, -sW / 2); tray.add(back);
+      const left = createPanelMesh(W, H, t, p.tray_left, { handHole: ventHoles }); left.rotation.y = -Math.PI / 2; left.position.set(-sL / 2, 0, -sW / 2); tray.add(left);
+      const right = createPanelMesh(W, H, t, p.tray_right, { handHole: ventHoles }); right.rotation.y = Math.PI / 2; right.position.set(sL / 2, 0, sW / 2); tray.add(right);
       packagingGroup.add(tray);
 
-      if (state.showFlora) {
-        packagingGroup.add(createCutFlowersBoxContent(L, W));
-      }
+      if (state.showFlora) packagingGroup.add(createCutFlowersBoxContent(L, W));
 
-      // Telescopic Lid
-      const lidH = currentDieline.meta.lidH || 8;
-      const lidL = currentDieline.meta.lidL || (L + 1.6);
-      const lidW = currentDieline.meta.lidW || (W + 1.6);
+      const lidH = currentDieline.meta.lidH || 8, lidL = currentDieline.meta.lidL || (L + 1.6), lidW = currentDieline.meta.lidW || (W + 1.6);
       const slL = lidL * CM_SCALE, slW = lidW * CM_SCALE, slH = lidH * CM_SCALE;
-
       const lid = new THREE.Group();
-      const lidTop = createPanelMesh(lidL, lidW, t, p.lid_bottom);
-      lidTop.rotation.x = -Math.PI / 2;
-      lidTop.position.set(-slL / 2, slH, slW / 2);
-      lid.add(lidTop);
-
-      const lFront = createPanelMesh(lidL, lidH, t, p.lid_front);
-      lFront.position.set(-slL / 2, 0, slW / 2);
-      lid.add(lFront);
-
-      const lBack = createPanelMesh(lidL, lidH, t, p.lid_back);
-      lBack.rotation.y = Math.PI;
-      lBack.position.set(slL / 2, 0, -slW / 2);
-      lid.add(lBack);
-
-      const lLeft = createPanelMesh(lidW, lidH, t, p.lid_left, { handHole: ventHoles });
-      lLeft.rotation.y = -Math.PI / 2;
-      lLeft.position.set(-slL / 2, 0, -slW / 2);
-      lid.add(lLeft);
-
-      const lRight = createPanelMesh(lidW, lidH, t, p.lid_right, { handHole: ventHoles });
-      lRight.rotation.y = Math.PI / 2;
-      lRight.position.set(slL / 2, 0, slW / 2);
-      lid.add(lRight);
-
-      // Animate lid lifting & tilting back
+      const lidTop = createPanelMesh(lidL, lidW, t, p.lid_bottom); lidTop.rotation.x = -Math.PI / 2; lidTop.position.set(-slL / 2, slH, slW / 2); lid.add(lidTop);
+      const lFront = createPanelMesh(lidL, lidH, t, p.lid_front); lFront.position.set(-slL / 2, 0, slW / 2); lid.add(lFront);
+      const lBack = createPanelMesh(lidL, lidH, t, p.lid_back); lBack.rotation.y = Math.PI; lBack.position.set(slL / 2, 0, -slW / 2); lid.add(lBack);
+      const lLeft = createPanelMesh(lidW, lidH, t, p.lid_left, { handHole: ventHoles }); lLeft.rotation.y = -Math.PI / 2; lLeft.position.set(-slL / 2, 0, -slW / 2); lid.add(lLeft);
+      const lRight = createPanelMesh(lidW, lidH, t, p.lid_right, { handHole: ventHoles }); lRight.rotation.y = Math.PI / 2; lRight.position.set(slL / 2, 0, slW / 2); lid.add(lRight);
       lid.position.y = (sH - slH) + open * (sH * 0.9 + 0.55);
       lid.position.z = -open * 0.45;
       lid.rotation.x = -open * 0.35;
       packagingGroup.add(lid);
     } else {
-      // FEFCO 0201 Regular Slotted Container
       const flapH = currentDieline.meta.flapH || (W * 0.5);
       const box = new THREE.Group();
+      const bot = createPanelMesh(L, W, t, p.bottom); bot.rotation.x = -Math.PI / 2; bot.position.set(-sL / 2, 0, sW / 2); box.add(bot);
+      const front = createPanelMesh(L, H, t, p.front); front.position.set(-sL / 2, 0, sW / 2); box.add(front);
+      const back = createPanelMesh(L, H, t, p.back); back.rotation.y = Math.PI; back.position.set(sL / 2, 0, -sW / 2); box.add(back);
+      const left = createPanelMesh(W, H, t, p.left, { handHole: ventHoles }); left.rotation.y = -Math.PI / 2; left.position.set(-sL / 2, 0, -sW / 2); box.add(left);
+      const right = createPanelMesh(W, H, t, p.right, { handHole: ventHoles }); right.rotation.y = Math.PI / 2; right.position.set(sL / 2, 0, sW / 2); box.add(right);
 
-      const bot = createPanelMesh(L, W, t, p.bottom);
-      bot.rotation.x = -Math.PI / 2;
-      bot.position.set(-sL / 2, 0, sW / 2);
-      box.add(bot);
-
-      const front = createPanelMesh(L, H, t, p.front);
-      front.position.set(-sL / 2, 0, sW / 2);
-      box.add(front);
-
-      const back = createPanelMesh(L, H, t, p.back);
-      back.rotation.y = Math.PI;
-      back.position.set(sL / 2, 0, -sW / 2);
-      box.add(back);
-
-      const left = createPanelMesh(W, H, t, p.left, { handHole: ventHoles });
-      left.rotation.y = -Math.PI / 2;
-      left.position.set(-sL / 2, 0, -sW / 2);
-      box.add(left);
-
-      const right = createPanelMesh(W, H, t, p.right, { handHole: ventHoles });
-      right.rotation.y = Math.PI / 2;
-      right.position.set(sL / 2, 0, sW / 2);
-      box.add(right);
-
-      // Top flaps rotating around top edges
       const ang = (Math.PI / 2) * (1 - open * 1.45);
-      const flapF = createPanelMesh(L, flapH, t, p.flap_top_F);
-      flapF.position.set(-sL / 2, sH, sW / 2);
-      flapF.rotation.x = -ang;
-      box.add(flapF);
+      const flapF = createPanelMesh(L, flapH, t, p.flap_top_F); flapF.position.set(-sL / 2, sH, sW / 2); flapF.rotation.x = -ang; box.add(flapF);
+      const flapB = createPanelMesh(L, flapH, t, p.flap_top_B); flapB.position.set(sL / 2, sH, -sW / 2); flapB.rotation.y = Math.PI; flapB.rotation.x = -ang; box.add(flapB);
 
-      const flapB = createPanelMesh(L, flapH, t, p.flap_top_B);
-      flapB.position.set(sL / 2, sH, -sW / 2);
-      flapB.rotation.y = Math.PI;
-      flapB.rotation.x = -ang;
-      box.add(flapB);
+      const pL = new THREE.Group(); pL.position.set(-sL / 2, sH, -sW / 2); pL.rotation.y = -Math.PI / 2;
+      const flapL = createPanelMesh(W, flapH, t, p.flap_top_L); flapL.rotation.x = -ang * 0.92; pL.add(flapL); box.add(pL);
 
-      const flapL = createPanelMesh(W, flapH, t, p.flap_top_L);
-      const pL = new THREE.Group();
-      pL.position.set(-sL / 2, sH, -sW / 2);
-      pL.rotation.y = -Math.PI / 2;
-      flapL.rotation.x = -ang * 0.92;
-      pL.add(flapL);
-      box.add(pL);
-
-      const flapR = createPanelMesh(W, flapH, t, p.flap_top_R);
-      const pR = new THREE.Group();
-      pR.position.set(sL / 2, sH, sW / 2);
-      pR.rotation.y = Math.PI / 2;
-      flapR.rotation.x = -ang * 0.92;
-      pR.add(flapR);
-      box.add(pR);
+      const pR = new THREE.Group(); pR.position.set(sL / 2, sH, sW / 2); pR.rotation.y = Math.PI / 2;
+      const flapR = createPanelMesh(W, flapH, t, p.flap_top_R); flapR.rotation.x = -ang * 0.92; pR.add(flapR); box.add(pR);
 
       packagingGroup.add(box);
-      if (state.showFlora) {
-        packagingGroup.add(createCutFlowersBoxContent(L, W));
-      }
+      if (state.showFlora) packagingGroup.add(createCutFlowersBoxContent(L, W));
     }
   } else if (state.productType === 'pot_box') {
     const { potL: L, potW: W, potH: H, potDia, showFrontCut } = state.dims;
     const sL = L * CM_SCALE, sW = W * CM_SCALE, sH = H * CM_SCALE;
     const frontH = showFrontCut ? H * 0.48 : H;
 
-    const bot = createPanelMesh(L, W, t, p.bottom);
-    bot.rotation.x = -Math.PI / 2;
-    bot.position.set(-sL / 2, 0, sW / 2);
-    packagingGroup.add(bot);
+    const bot = createPanelMesh(L, W, t, p.bottom); bot.rotation.x = -Math.PI / 2; bot.position.set(-sL / 2, 0, sW / 2); packagingGroup.add(bot);
+    const front = createPanelMesh(L, frontH, t, p.front); front.position.set(-sL / 2, 0, sW / 2); front.rotation.x = open * 0.5; packagingGroup.add(front);
+    const back = createPanelMesh(L, H, t, p.back); back.rotation.y = Math.PI; back.position.set(sL / 2, 0, -sW / 2); packagingGroup.add(back);
+    const left = createPanelMesh(W, H, t, p.left, { handHole: true }); left.rotation.y = -Math.PI / 2; left.position.set(-sL / 2, 0, -sW / 2); packagingGroup.add(left);
+    const right = createPanelMesh(W, H, t, p.right, { handHole: true }); right.rotation.y = Math.PI / 2; right.position.set(sL / 2, 0, sW / 2); packagingGroup.add(right);
 
-    const front = createPanelMesh(L, frontH, t, p.front);
-    front.position.set(-sL / 2, 0, sW / 2);
-    front.rotation.x = open * 0.5; // openable front display
-    packagingGroup.add(front);
+    const cols = Math.max(1, Math.floor((L - 2.5) / (potDia + 1.8)));
+    const rows = Math.max(1, Math.floor((W - 2.5) / (potDia + 1.8)));
+    const stepX = sL / cols, stepZ = sW / rows, potHoles = [], holeR = (potDia * 0.46) * CM_SCALE;
+    for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) potHoles.push({ x: (c + 0.5) * stepX, y: (r + 0.5) * stepZ, r: holeR });
 
-    const back = createPanelMesh(L, H, t, p.back);
-    back.rotation.y = Math.PI;
-    back.position.set(sL / 2, 0, -sW / 2);
-    packagingGroup.add(back);
-
-    const left = createPanelMesh(W, H, t, p.left, { handHole: true });
-    left.rotation.y = -Math.PI / 2;
-    left.position.set(-sL / 2, 0, -sW / 2);
-    packagingGroup.add(left);
-
-    const right = createPanelMesh(W, H, t, p.right, { handHole: true });
-    right.rotation.y = Math.PI / 2;
-    right.position.set(sL / 2, 0, sW / 2);
-    packagingGroup.add(right);
-
-    // Calculate Pot Insert Grid
-    const margin = 2.5;
-    const cols = Math.max(1, Math.floor((L - margin) / (potDia + 1.8)));
-    const rows = Math.max(1, Math.floor((W - margin) / (potDia + 1.8)));
-    const stepX = sL / cols;
-    const stepZ = sW / rows;
-    const potHoles = [];
-    const holeR = (potDia * 0.46) * CM_SCALE;
-
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) {
-        potHoles.push({
-          x: (c + 0.5) * stepX,
-          y: (r + 0.5) * stepZ,
-          r: holeR
-        });
-      }
-    }
-
-    const insertY = Math.min(sH * 0.35, potDia * 0.75 * CM_SCALE);
     const insertMesh = createPanelMesh(L - 0.5, W - 0.5, t * 0.8, null, { potHoles });
     insertMesh.material = [innerMat, innerMat, edgeMat];
     insertMesh.rotation.x = -Math.PI / 2;
-    insertMesh.position.set(-(L - 0.5) * CM_SCALE / 2, insertY + open * 0.4, (W - 0.5) * CM_SCALE / 2);
+    insertMesh.position.set(-(L - 0.5) * CM_SCALE / 2, Math.min(sH * 0.35, potDia * 0.75 * CM_SCALE) + open * 0.4, (W - 0.5) * CM_SCALE / 2);
     packagingGroup.add(insertMesh);
 
-    // Update insert info label if present
     const infoEl = document.getElementById('potGridInfo');
     if (infoEl) infoEl.textContent = `Ячеек во вкладыше: ${cols} × ${rows} = ${cols * rows} горшков (Ø${potDia} см)`;
 
@@ -1869,142 +1498,63 @@ function buildPackaging3D() {
   } else if (state.productType === 'cone_sleeve') {
     const { coneTop: Wt, coneBot: Wb, coneH: H, conePerf } = state.dims;
     const safeTop = Math.max(Wb + 2, Wt);
-    const rTop = (safeTop / Math.PI) * CM_SCALE;
-    const rBot = (Wb / Math.PI) * CM_SCALE;
-    const h3d = H * CM_SCALE;
-
-    // Build custom truncated cone with polar UV mapping matching 2D sector dieline
-    const radSeg = 56, hSeg = 12;
-    const geom = new THREE.CylinderGeometry(rTop, rBot, h3d, radSeg, hSeg, true);
-    const pos = geom.attributes.position;
-    const uv = geom.attributes.uv;
-    const m = currentDieline.meta;
+    const rTop = (safeTop / Math.PI) * CM_SCALE, rBot = (Wb / Math.PI) * CM_SCALE, h3d = H * CM_SCALE;
+    const geom = new THREE.CylinderGeometry(rTop, rBot, h3d, 56, 12, true);
+    const pos = geom.attributes.position, uv = geom.attributes.uv, m = currentDieline.meta;
 
     for (let i = 0; i < pos.count; i++) {
-      // Shift bottom to y = 0
       const py = pos.getY(i) + h3d / 2;
       pos.setY(i, py);
-
-      // Slight natural oval squeeze when openAmount > 0
-      const px = pos.getX(i);
-      const pz = pos.getZ(i);
-      const pinch = 1 - open * 0.25;
+      const px = pos.getX(i), pz = pos.getZ(i);
       pos.setX(i, px * (1 + open * 0.15));
-      pos.setZ(i, pz * pinch);
-
-      // UV mapping to annular sector in 2D canvas
-      const vFrac = py / h3d; // 0 at bottom, 1 at top
-      const angle = Math.atan2(px, pz); // -PI..PI, 0 at front (+Z)
-      const uNorm = angle / (Math.PI * 2); // -0.5 .. 0.5
+      pos.setZ(i, pz * (1 - open * 0.25));
       if (m && m.R1 !== undefined) {
-        const R = m.R1 + vFrac * (m.R2 - m.R1);
-        const a = uNorm * m.theta;
-        const cx = m.apexX + R * m.sc * Math.sin(a);
-        const cy = m.apexY - R * m.sc * Math.cos(a);
-        uv.setXY(i, cx / TEX_W, 1 - cy / TEX_H);
+        const R = m.R1 + (py / h3d) * (m.R2 - m.R1);
+        const a = (Math.atan2(px, pz) / (Math.PI * 2)) * m.theta;
+        uv.setXY(i, (m.apexX + R * m.sc * Math.sin(a)) / TEX_W, 1 - (m.apexY - R * m.sc * Math.cos(a)) / TEX_H);
       }
     }
-    geom.computeVertexNormals();
-    uv.needsUpdate = true;
-
-    const coneMesh = new THREE.Mesh(geom, outerMat);
-    coneMesh.castShadow = true;
-    coneMesh.position.y = 0.02;
+    geom.computeVertexNormals(); uv.needsUpdate = true;
+    const coneMesh = new THREE.Mesh(geom, outerMat); coneMesh.castShadow = true; coneMesh.position.y = 0.02;
     packagingGroup.add(coneMesh);
 
     if (conePerf) {
-      const perfRing = new THREE.Mesh(
-        new THREE.TorusGeometry(rBot + (rTop - rBot) * 0.35, 0.004, 6, 48),
-        new THREE.MeshBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.5 })
-      );
-      perfRing.rotation.x = Math.PI / 2;
-      perfRing.position.y = h3d * 0.35;
+      const perfRing = new THREE.Mesh(new THREE.TorusGeometry(rBot + (rTop - rBot) * 0.35, 0.004, 6, 48), new THREE.MeshBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.5 }));
+      perfRing.rotation.x = Math.PI / 2; perfRing.position.y = h3d * 0.35;
       packagingGroup.add(perfRing);
     }
-
-    if (state.showFlora) {
-      const orchid = createOrchid3D(Math.max(9, Math.min(16, Wb * 0.85)), H * 0.92);
-      packagingGroup.add(orchid);
-    }
+    if (state.showFlora) packagingGroup.add(createOrchid3D(Math.max(9, Math.min(16, Wb * 0.85)), H * 0.92));
   } else if (state.productType === 'bouquet_bag') {
     const { bagWTop: Wt, bagWBot: Wb, bagD: D, bagH: H, bagHandle } = state.dims;
-    const sWt = Wt * CM_SCALE, sWb = Wb * CM_SCALE, sD = D * CM_SCALE, sH = H * CM_SCALE;
-    const dx = (sWt - sWb) / 2;
-    const tilt = Math.atan2(dx, sH);
-    const slantH = Math.sqrt(sH * sH + dx * dx);
+    const sWt = Wt * CM_SCALE, sWb = Wb * CM_SCALE, sD = D * CM_SCALE, sH = H * CM_SCALE, dx = (sWt - sWb) / 2;
+    const tilt = Math.atan2(dx, sH), slantH = Math.sqrt(sH * sH + dx * dx);
 
     const makeTrapPanel = (wTopCm, wBotCm, hCm, panelRect, hasCutoutHandle) => {
       const wt = wTopCm * CM_SCALE, wb = wBotCm * CM_SCALE, h = hCm * CM_SCALE;
       const shape = new THREE.Shape();
-      shape.moveTo(-wb / 2, 0);
-      shape.lineTo(wb / 2, 0);
-      shape.lineTo(wt / 2, h);
-      shape.lineTo(-wt / 2, h);
-      shape.closePath();
-
+      shape.moveTo(-wb / 2, 0); shape.lineTo(wb / 2, 0); shape.lineTo(wt / 2, h); shape.lineTo(-wt / 2, h); shape.closePath();
       if (hasCutoutHandle) {
-        const hole = new THREE.Path();
-        hole.absellipse(0, h * 0.86, wt * 0.22, h * 0.055, 0, Math.PI * 2, true, 0);
-        shape.holes.push(hole);
+        const hole = new THREE.Path(); hole.absellipse(0, h * 0.86, wt * 0.22, h * 0.055, 0, Math.PI * 2, true, 0); shape.holes.push(hole);
       }
-
       const geom = new THREE.ExtrudeGeometry(shape, { depth: t * 0.6, bevelEnabled: false });
       const pos = geom.attributes.position, norm = geom.attributes.normal, uv = geom.attributes.uv;
-      const u0 = panelRect ? panelRect.x / TEX_W : 0;
-      const u1 = panelRect ? (panelRect.x + panelRect.w) / TEX_W : 1;
-      const vTop = panelRect ? 1 - panelRect.y / TEX_H : 1;
-      const vBot = panelRect ? 1 - (panelRect.y + panelRect.h) / TEX_H : 0;
-
+      const u0 = panelRect ? panelRect.x / TEX_W : 0, u1 = panelRect ? (panelRect.x + panelRect.w) / TEX_W : 1;
+      const vTop = panelRect ? 1 - panelRect.y / TEX_H : 1, vBot = panelRect ? 1 - (panelRect.y + panelRect.h) / TEX_H : 0;
       geom.clearGroups();
       for (let i = 0; i < pos.count; i++) {
-        if (Math.abs(norm.getZ(i)) > 0.5) {
-          const lx = (pos.getX(i) + wt / 2) / wt;
-          const ly = pos.getY(i) / h;
-          uv.setXY(i, u0 + lx * (u1 - u0), vBot + ly * (vTop - vBot));
-        }
+        if (Math.abs(norm.getZ(i)) > 0.5) uv.setXY(i, u0 + ((pos.getX(i) + wt / 2) / wt) * (u1 - u0), vBot + (pos.getY(i) / h) * (vTop - vBot));
       }
-      for (let tri = 0; tri < pos.count / 3; tri++) {
-        const nz = norm.getZ(tri * 3);
-        geom.addGroup(tri * 3, 3, nz > 0.5 ? 0 : (nz < -0.5 ? 1 : 2));
-      }
+      for (let tri = 0; tri < pos.count / 3; tri++) geom.addGroup(tri * 3, 3, norm.getZ(tri * 3) > 0.5 ? 0 : (norm.getZ(tri * 3) < -0.5 ? 1 : 2));
       uv.needsUpdate = true;
-      const m = new THREE.Mesh(geom, [outerMat, innerMat, edgeMat]);
-      m.castShadow = true;
-      return m;
+      const m = new THREE.Mesh(geom, [outerMat, innerMat, edgeMat]); m.castShadow = true; return m;
     };
 
-    // Bottom
-    const bot = createPanelMesh(Wb, D, t * 0.6, p.bottom);
-    bot.rotation.x = -Math.PI / 2;
-    bot.position.set(-sWb / 2, 0, sD / 2);
-    packagingGroup.add(bot);
+    const bot = createPanelMesh(Wb, D, t * 0.6, p.bottom); bot.rotation.x = -Math.PI / 2; bot.position.set(-sWb / 2, 0, sD / 2); packagingGroup.add(bot);
+    const front = makeTrapPanel(Wt, Wb, H, p.front, bagHandle === 'cutout'); front.position.set(0, 0, sD / 2); front.rotation.x = open * 0.08; packagingGroup.add(front);
+    const back = makeTrapPanel(Wt, Wb, H, p.back, bagHandle === 'cutout'); back.rotation.y = Math.PI; back.position.set(0, 0, -sD / 2); back.rotation.x = -open * 0.08; packagingGroup.add(back);
+    const sideL = createPanelMesh(D, slantH / CM_SCALE, t * 0.6, p.left); sideL.rotation.y = -Math.PI / 2; sideL.rotation.z = tilt; sideL.position.set(-sWb / 2, 0, -sD / 2); packagingGroup.add(sideL);
+    const sideR = createPanelMesh(D, slantH / CM_SCALE, t * 0.6, p.right); sideR.rotation.y = Math.PI / 2; sideR.rotation.z = -tilt; sideR.position.set(sWb / 2, 0, sD / 2); packagingGroup.add(sideR);
 
-    // Front & Back
-    const front = makeTrapPanel(Wt, Wb, H, p.front, bagHandle === 'cutout');
-    front.position.set(0, 0, sD / 2);
-    front.rotation.x = open * 0.08;
-    packagingGroup.add(front);
-
-    const back = makeTrapPanel(Wt, Wb, H, p.back, bagHandle === 'cutout');
-    back.rotation.y = Math.PI;
-    back.position.set(0, 0, -sD / 2);
-    back.rotation.x = -open * 0.08;
-    packagingGroup.add(back);
-
-    // Sides (angled slightly to meet Wt/Wb)
-    const sideL = createPanelMesh(D, slantH / CM_SCALE, t * 0.6, p.left);
-    sideL.rotation.y = -Math.PI / 2;
-    sideL.rotation.z = tilt;
-    sideL.position.set(-sWb / 2, 0, -sD / 2);
-    packagingGroup.add(sideL);
-
-    const sideR = createPanelMesh(D, slantH / CM_SCALE, t * 0.6, p.right);
-    sideR.rotation.y = Math.PI / 2;
-    sideR.rotation.z = -tilt;
-    sideR.position.set(sWb / 2, 0, sD / 2);
-    packagingGroup.add(sideR);
-
-    // Cord handles
     if (bagHandle === 'cord') {
       const cordMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.7 });
       for (const zSign of [-1, 1]) {
@@ -2015,15 +1565,12 @@ function buildPackaging3D() {
           new THREE.Vector3(sWt * 0.24, sH - 0.04, zSign * sD / 2),
         ]);
         const cord = new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.016, 8, false), cordMat);
-        cord.castShadow = true;
-        packagingGroup.add(cord);
+        cord.castShadow = true; packagingGroup.add(cord);
       }
     }
-
     if (state.showFlora) {
       const bouquet = createBouquet3D(Math.min(1.1, Math.max(0.7, H / 30)));
-      bouquet.position.y = 0.05;
-      packagingGroup.add(bouquet);
+      bouquet.position.y = 0.05; packagingGroup.add(bouquet);
     }
   } else if (state.productType === 'wrap_sheet') {
     const { wrapMode, wrapPleats } = state.dims;
@@ -2033,147 +1580,89 @@ function buildPackaging3D() {
 
     if (wrapMode === 'sheet') {
       const geom = new THREE.PlaneGeometry(3.2, 2.3, 48, 32);
-      const pos = geom.attributes.position;
-      const uv = geom.attributes.uv;
+      const pos = geom.attributes.position, uv = geom.attributes.uv;
       for (let i = 0; i < pos.count; i++) {
-        const x = pos.getX(i), y = pos.getY(i);
-        const wave = Math.sin(x * wrapPleats) * 0.04 * (0.3 + open);
-        pos.setZ(i, wave + Math.cos(y * 3) * 0.02);
+        pos.setZ(i, Math.sin(pos.getX(i) * wrapPleats) * 0.04 * (0.3 + open) + Math.cos(pos.getY(i) * 3) * 0.02);
         uv.setXY(i, u0 + uv.getX(i) * (u1 - u0), vBot + uv.getY(i) * (vTop - vBot));
       }
       geom.computeVertexNormals();
-      const mesh = new THREE.Mesh(geom, outerMat);
-      mesh.rotation.x = -Math.PI / 2 + 0.15;
-      mesh.position.y = 0.12;
-      mesh.castShadow = true;
+      const mesh = new THREE.Mesh(geom, outerMat); mesh.rotation.x = -Math.PI / 2 + 0.15; mesh.position.y = 0.12; mesh.castShadow = true;
       packagingGroup.add(mesh);
     } else {
-      // Draped pleated bouquet wrap (two overlapping flared layers)
       for (let layerIdx = 0; layerIdx < 2; layerIdx++) {
-        const rTop = layerIdx === 0 ? 0.68 : 0.56;
-        const rBot = 0.14;
         const h = layerIdx === 0 ? 1.55 : 1.38;
-        const geom = new THREE.CylinderGeometry(rTop, rBot, h, 72, 14, true);
-        const pos = geom.attributes.position;
-        const uv = geom.attributes.uv;
-
+        const geom = new THREE.CylinderGeometry(layerIdx === 0 ? 0.68 : 0.56, 0.14, h, 72, 14, true);
+        const pos = geom.attributes.position, uv = geom.attributes.uv;
         for (let i = 0; i < pos.count; i++) {
-          const py = pos.getY(i) + h / 2;
-          const frac = py / h;
-          const x = pos.getX(i), z = pos.getZ(i);
-          const ang = Math.atan2(x, z);
-          // Pleats grow towards the top edge
-          const pleatAmp = Math.sin(ang * wrapPleats + layerIdx * 1.1) * (0.045 + open * 0.04) * frac;
-          // Higher back collar
-          const collarBoost = Math.cos(ang + Math.PI) * 0.18 * frac;
-          const scaleR = 1 + pleatAmp;
-          pos.setXYZ(i, x * scaleR, py + collarBoost, z * scaleR);
+          const py = pos.getY(i) + h / 2, frac = py / h, x = pos.getX(i), z = pos.getZ(i), ang = Math.atan2(x, z);
+          const scaleR = 1 + Math.sin(ang * wrapPleats + layerIdx * 1.1) * (0.045 + open * 0.04) * frac;
+          pos.setXYZ(i, x * scaleR, py + Math.cos(ang + Math.PI) * 0.18 * frac, z * scaleR);
           uv.setXY(i, u0 + uv.getX(i) * (u1 - u0), vBot + uv.getY(i) * (vTop - vBot));
         }
         geom.computeVertexNormals();
-        const wrapMesh = new THREE.Mesh(geom, outerMat);
-        wrapMesh.position.y = 0.28 + layerIdx * 0.04;
-        wrapMesh.rotation.y = layerIdx * 0.45;
-        wrapMesh.castShadow = true;
+        const wrapMesh = new THREE.Mesh(geom, outerMat); wrapMesh.position.y = 0.28 + layerIdx * 0.04; wrapMesh.rotation.y = layerIdx * 0.45; wrapMesh.castShadow = true;
         packagingGroup.add(wrapMesh);
       }
-
       if (state.showFlora) {
-        const bq = createBouquet3D(1.05);
-        bq.position.y = 0.25;
-        packagingGroup.add(bq);
+        const bq = createBouquet3D(1.05); bq.position.y = 0.25; packagingGroup.add(bq);
       }
     }
   } else if (state.productType === 'ribbon') {
     const { ribbonWidthMm, ribbonMode } = state.dims;
-    const rw = (ribbonWidthMm / 10) * CM_SCALE * 1.8; // scaled for clear visibility
+    const rw = (ribbonWidthMm / 10) * CM_SCALE * 1.8;
     const rp = p.ribbon || { x: 70, y: 400, w: 1460, h: 280 };
-    const u0 = rp.x / TEX_W, u1 = (rp.x + rp.w) / TEX_W;
-    const vTop = 1 - rp.y / TEX_H, vBot = 1 - (rp.y + rp.h) / TEX_H;
+    const u0 = rp.x / TEX_W, u1 = (rp.x + rp.w) / TEX_W, vTop = 1 - rp.y / TEX_H, vBot = 1 - (rp.y + rp.h) / TEX_H;
 
     const remapUV = (geom, repeatU = 2) => {
       const uv = geom.attributes.uv;
-      for (let i = 0; i < uv.count; i++) {
-        const u = (uv.getX(i) * repeatU) % 1;
-        const v = uv.getY(i);
-        uv.setXY(i, u0 + u * (u1 - u0), vBot + v * (vTop - vBot));
-      }
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + ((uv.getX(i) * repeatU) % 1) * (u1 - u0), vBot + uv.getY(i) * (vTop - vBot));
       uv.needsUpdate = true;
     };
 
-    // Spool core & wound ribbon roll
-    const spool = new THREE.Group();
-    const rollR = 0.55;
+    const spool = new THREE.Group(), rollR = 0.55;
     const rollMesh = new THREE.Mesh(new THREE.CylinderGeometry(rollR, rollR, rw, 48, 1, true), outerMat);
     remapUV(rollMesh.geometry, 3);
     rollMesh.position.set(ribbonMode === 'bow_spool' ? -0.95 : 0, rollR, 0);
-    rollMesh.rotation.x = Math.PI / 2;
-    rollMesh.castShadow = true;
-    spool.add(rollMesh);
+    rollMesh.rotation.x = Math.PI / 2; rollMesh.castShadow = true; spool.add(rollMesh);
 
-    // Flanges on spool
     const flangeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7 });
     for (const zOff of [-rw / 2 - 0.015, rw / 2 + 0.015]) {
       const fl = new THREE.Mesh(new THREE.RingGeometry(0.18, rollR + 0.08, 36), flangeMat);
-      fl.position.set(ribbonMode === 'bow_spool' ? -0.95 : 0, rollR, zOff);
-      spool.add(fl);
+      fl.position.set(ribbonMode === 'bow_spool' ? -0.95 : 0, rollR, zOff); spool.add(fl);
     }
 
-    // Flowing tail from spool
-    const tailCurve = new THREE.CatmullRomCurve3([
+    const tailPts = new THREE.CatmullRomCurve3([
       new THREE.Vector3((ribbonMode === 'bow_spool' ? -0.95 : 0), 0.02, 0),
       new THREE.Vector3(0.2, 0.015, 0.35),
       new THREE.Vector3(1.1, 0.02, 0.15 + open * 0.4),
-    ]);
-    const tailPts = tailCurve.getPoints(30);
+    ]).getPoints(30);
     const tailGeom = new THREE.PlaneGeometry(2.2, rw, 30, 1);
     const tPos = tailGeom.attributes.position;
-    for (let i = 0; i < tPos.count; i++) {
-      const col = i % 31;
-      const pt = tailPts[col];
-      const rowSign = i < 31 ? 1 : -1;
-      tPos.setXYZ(i, pt.x, pt.y + 0.01, pt.z + rowSign * (rw / 2));
-    }
-    tailGeom.computeVertexNormals();
-    remapUV(tailGeom, 2);
-    const tailMesh = new THREE.Mesh(tailGeom, outerMat);
-    tailMesh.castShadow = true;
-    spool.add(tailMesh);
+    for (let i = 0; i < tPos.count; i++) tPos.setXYZ(i, tailPts[i % 31].x, tailPts[i % 31].y + 0.01, tailPts[i % 31].z + (i < 31 ? 1 : -1) * (rw / 2));
+    tailGeom.computeVertexNormals(); remapUV(tailGeom, 2);
+    const tailMesh = new THREE.Mesh(tailGeom, outerMat); tailMesh.castShadow = true; spool.add(tailMesh);
     packagingGroup.add(spool);
 
-    // Bow loops
     if (ribbonMode === 'bow_spool') {
-      const bow = new THREE.Group();
-      bow.position.set(0.65, 0.25, 0.25);
+      const bow = new THREE.Group(); bow.position.set(0.65, 0.25, 0.25);
       for (const side of [-1, 1]) {
-        const loopGeom = new THREE.TorusGeometry(0.32, rw * 0.38, 12, 32);
-        remapUV(loopGeom, 2);
+        const loopGeom = new THREE.TorusGeometry(0.32, rw * 0.38, 12, 32); remapUV(loopGeom, 2);
         const loop = new THREE.Mesh(loopGeom, outerMat);
-        loop.scale.set(1.3, 0.7, 0.55);
-        loop.position.set(side * 0.36, 0.18, 0);
-        loop.rotation.z = side * 0.35;
-        loop.castShadow = true;
+        loop.scale.set(1.3, 0.7, 0.55); loop.position.set(side * 0.36, 0.18, 0); loop.rotation.z = side * 0.35; loop.castShadow = true;
         bow.add(loop);
       }
       const knot = new THREE.Mesh(new THREE.CylinderGeometry(rw * 0.55, rw * 0.55, rw * 1.1, 16), outerMat);
-      remapUV(knot.geometry, 1);
-      knot.rotation.z = Math.PI / 2;
-      knot.position.y = 0.14;
-      bow.add(knot);
+      remapUV(knot.geometry, 1); knot.rotation.z = Math.PI / 2; knot.position.y = 0.14; bow.add(knot);
       packagingGroup.add(bow);
     }
   }
 
-  // Adjust camera target nicely to packaging center
   const box3 = new THREE.Box3().setFromObject(packagingGroup);
   if (!box3.isEmpty()) {
-    const center = new THREE.Vector3();
-    box3.getCenter(center);
-    controls.target.lerp(center, 0.65);
+    const center = new THREE.Vector3(); box3.getCenter(center); controls.target.lerp(center, 0.65);
   }
 }
-
-// =========================================================
+// >>> КОНЕЦ ЧАСТИ 2: ДАЛЬШЕ ВСТАВЬТЕ ЧАСТЬ 3 <<<// =========================================================
 // 8. DYNAMIC DIMENSIONS UI BUILDER
 // =========================================================
 function renderDimsUI() {
@@ -2291,7 +1780,7 @@ function renderDimsUI() {
       { v: 'sheet', t: 'Развернутый лист 70×50 см' },
     ]);
     addNumRow('Складки / Плиссировка', 'wrapPleats', 2, 14, 1, 'шт');
-    summary.textContent = `Лист флористический: 70 × 50 см`;
+    summary.textContent = 'Лист флористический: 70 × 50 см';
   } else if (state.productType === 'ribbon') {
     addSelect('Ширина ленты', 'ribbonWidthMm', [
       { v: 15, t: '15 мм (узкая)' },
@@ -2308,7 +1797,7 @@ function renderDimsUI() {
 }
 
 // =========================================================
-// 9. LAYERS & INTERACTION MANAGEMENT
+// 9. LAYERS & 2D INTERACTION
 // =========================================================
 let nextLayerId = 1;
 
@@ -2320,35 +1809,17 @@ function loadDemoLayers() {
   const add = (cfg) => {
     const id = nextLayerId++;
     state.layers.push({
-      id,
-      type: 'text',
-      text: 'FLORA STUDIO',
-      font: 'Montserrat, sans-serif',
-      fontSize: 48,
-      color: '#1e293b',
-      opacity: 1,
-      finish: 'ink',
-      x: TEX_W / 2,
-      y: TEX_H / 2,
-      scale: 1,
-      rotation: 0,
-      repeatPattern: false,
-      patternGap: 180,
-      ...cfg
+      id, type: 'text', text: 'FLORA STUDIO', font: 'Montserrat, sans-serif', fontSize: 48,
+      color: '#1e293b', opacity: 1, finish: 'ink', x: TEX_W / 2, y: TEX_H / 2,
+      scale: 1, rotation: 0, repeatPattern: false, patternGap: 180, ...cfg
     });
     return id;
   };
 
   if (state.productType === 'cut_box') {
-    const front = p.tray_front || p.front;
-    const lid = p.lid_bottom || p.left;
-    const side = p.tray_left || p.right;
-    if (front) {
-      add({ text: 'DUTCH ROSES • PREMIUM', x: front.x + front.w / 2, y: front.y + front.h * 0.55, fontSize: 38, color: '#271c15' });
-    }
-    if (lid) {
-      add({ text: 'FRESH FLOWERS', x: lid.x + lid.w / 2, y: lid.y + lid.h * 0.5, fontSize: 54, color: '#271c15', finish: 'foil_gold' });
-    }
+    const front = p.tray_front || p.front, lid = p.lid_bottom || p.left, side = p.tray_left || p.right;
+    if (front) add({ text: 'DUTCH ROSES • PREMIUM', x: front.x + front.w / 2, y: front.y + front.h * 0.55, fontSize: 38, color: '#271c15' });
+    if (lid) add({ text: 'FRESH FLOWERS', x: lid.x + lid.w / 2, y: lid.y + lid.h * 0.5, fontSize: 54, color: '#271c15', finish: 'foil_gold' });
     if (side) {
       add({ type: 'icon', iconId: 'up', baseSize: 65, x: side.x + side.w * 0.3, y: side.y + side.h * 0.55, color: '#271c15' });
       add({ type: 'icon', iconId: 'temp', baseSize: 65, x: side.x + side.w * 0.7, y: side.y + side.h * 0.55, color: '#271c15' });
@@ -2357,8 +1828,7 @@ function loadDemoLayers() {
     if (p.front) add({ text: 'ORCHID COLLECTION', x: p.front.x + p.front.w / 2, y: p.front.y + p.front.h * 0.55, fontSize: 44, color: '#1e293b' });
     if (p.left) add({ type: 'icon', iconId: 'orchid', baseSize: 95, x: p.left.x + p.left.w / 2, y: p.left.y + p.left.h * 0.55, color: '#065f46' });
   } else if (state.productType === 'cone_sleeve') {
-    const m = currentDieline.meta;
-    const midY = m.apexY - ((m.R1 + m.R2) * 0.52) * m.sc;
+    const m = currentDieline.meta, midY = m.apexY - ((m.R1 + m.R2) * 0.52) * m.sc;
     add({ type: 'icon', iconId: 'orchid', baseSize: 130, x: TEX_W / 2, y: midY - 70, color: '#ffffff', finish: 'foil_gold' });
     add({ text: 'PHALAENOPSIS', x: TEX_W / 2, y: midY + 45, fontSize: 42, font: "'Playfair Display', serif", color: '#ffffff' });
     add({ text: 'ROYAL BOTANIC', x: TEX_W / 2, y: midY + 95, fontSize: 24, color: '#e2e8f0' });
@@ -2386,8 +1856,8 @@ function renderLayerList() {
   [...state.layers].reverse().forEach(layer => {
     const div = document.createElement('div');
     div.className = 'layer-item' + (layer.id === state.selectedLayerId ? ' selected' : '');
-    const icon = layer.type === 'text' ? '𝐓' : (layer.type === 'icon' ? '★' : '🖼');
-    const name = layer.type === 'text' ? layer.text : (layer.type === 'icon' ? `Значок: ${layer.iconId}` : 'Изображение');
+    const icon = layer.type === 'text' ? '𝐓' : (layer.type === 'icon' ? '★' : (layer.type === 'qrcode' ? '📱' : '🖼'));
+    const name = layer.type === 'text' ? layer.text : (layer.type === 'icon' ? `Значок: ${layer.iconId}` : (layer.type === 'qrcode' ? `QR: ${layer.qrCaption || 'Уход'}` : 'Изображение'));
     const badge = layer.finish !== 'ink' ? ' ✨' : (layer.repeatPattern ? ' 🔁' : '');
     div.innerHTML = `<span class="layer-name">${icon} ${name}${badge}</span><span style="font-size:10px;color:var(--text-muted);">#${layer.id}</span>`;
     div.onclick = () => {
@@ -2404,22 +1874,24 @@ function syncLayerPropsUI() {
   const sel = state.layers.find(l => l.id === state.selectedLayerId);
   const body = document.getElementById('layerPropsBody');
   const noMsg = document.getElementById('noLayerMsg');
+  if (!sel) { body.style.display = 'none'; noMsg.style.display = 'block'; return; }
 
-  if (!sel) {
-    body.style.display = 'none';
-    noMsg.style.display = 'block';
-    return;
-  }
   body.style.display = 'flex';
   noMsg.style.display = 'none';
 
-  document.getElementById('propTextWrap').style.display = sel.type === 'text' ? 'flex' : 'none';
+  const isTextOrQr = sel.type === 'text' || sel.type === 'qrcode';
+  document.getElementById('propTextWrap').style.display = isTextOrQr ? 'flex' : 'none';
   document.getElementById('propFontWrap').style.display = sel.type === 'text' ? 'flex' : 'none';
 
   if (sel.type === 'text') {
+    document.getElementById('propTextLabel').textContent = 'Текст';
     document.getElementById('propText').value = sel.text;
     document.getElementById('propFont').value = sel.font;
+  } else if (sel.type === 'qrcode') {
+    document.getElementById('propTextLabel').textContent = 'Подпись под QR-кодом';
+    document.getElementById('propText').value = sel.qrCaption || '';
   }
+
   document.getElementById('propColor').value = sel.color;
   document.getElementById('propOpacity').value = sel.opacity;
   document.getElementById('propFinish').value = sel.finish;
@@ -2433,40 +1905,29 @@ function syncLayerPropsUI() {
   document.getElementById('propGapVal').textContent = sel.patternGap || 180;
 }
 
-// 2D Canvas Drag & Hit-Test
 let draggingLayer = null;
 let dragOffset = { x: 0, y: 0 };
 
 function getCanvasCoords(e) {
   const rect = editorCanvas.getBoundingClientRect();
-  return {
-    x: ((e.clientX - rect.left) / rect.width) * TEX_W,
-    y: ((e.clientY - rect.top) / rect.height) * TEX_H,
-  };
+  return { x: ((e.clientX - rect.left) / rect.width) * TEX_W, y: ((e.clientY - rect.top) / rect.height) * TEX_H };
 }
 
 editorCanvas.addEventListener('mousedown', (e) => {
   const pt = getCanvasCoords(e);
-  // Check top-most layer first
   let hit = null;
   for (let i = state.layers.length - 1; i >= 0; i--) {
     const l = state.layers[i];
     if (l.repeatPattern) continue;
     const b = getLayerBounds(l);
-    const dx = pt.x - l.x, dy = pt.y - l.y;
-    const ang = -(l.rotation * Math.PI) / 180;
-    const rx = dx * Math.cos(ang) - dy * Math.sin(ang);
-    const ry = dx * Math.sin(ang) + dy * Math.cos(ang);
-    if (Math.abs(rx) <= Math.max(30, b.w / 2) && Math.abs(ry) <= Math.max(30, b.h / 2)) {
-      hit = l;
-      break;
-    }
+    const dx = pt.x - l.x, dy = pt.y - l.y, ang = -(l.rotation * Math.PI) / 180;
+    const rx = dx * Math.cos(ang) - dy * Math.sin(ang), ry = dx * Math.sin(ang) + dy * Math.cos(ang);
+    if (Math.abs(rx) <= Math.max(30, b.w / 2) && Math.abs(ry) <= Math.max(30, b.h / 2)) { hit = l; break; }
   }
   if (hit) {
     state.selectedLayerId = hit.id;
     draggingLayer = hit;
-    dragOffset.x = pt.x - hit.x;
-    dragOffset.y = pt.y - hit.y;
+    dragOffset = { x: pt.x - hit.x, y: pt.y - hit.y };
     renderLayerList();
     syncLayerPropsUI();
     renderAllTextures();
@@ -2480,7 +1941,6 @@ window.addEventListener('mousemove', (e) => {
   draggingLayer.y = pt.y - dragOffset.y;
   renderAllTextures();
 });
-
 window.addEventListener('mouseup', () => { draggingLayer = null; });
 
 // =========================================================
@@ -2491,31 +1951,16 @@ function rebuildGeometry() {
   buildPackaging3D();
   renderAllTextures();
 }
+function rebuildGeometryAndUI() { renderDimsUI(); rebuildGeometry(); }
 
-function rebuildGeometryAndUI() {
-  renderDimsUI();
-  rebuildGeometry();
-}
-
-// Product Tabs
 document.querySelectorAll('#productTabs .tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#productTabs .tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     state.productType = btn.dataset.type;
-
-    // Sensible default material when switching product
-    const matMap = {
-      cut_box: 'kraft',
-      pot_box: 'kraft',
-      cone_sleeve: 'bopp_clear',
-      bouquet_bag: 'white_card',
-      wrap_sheet: 'tissue',
-      ribbon: 'satin_ribbon',
-    };
+    const matMap = { cut_box: 'kraft', pot_box: 'kraft', cone_sleeve: 'bopp_clear', bouquet_bag: 'white_card', wrap_sheet: 'tissue', ribbon: 'satin_ribbon' };
     state.material = matMap[state.productType];
     document.getElementById('materialSelect').value = state.material;
-
     renderDimsUI();
     currentDieline = computeDieline(state);
     buildPackaging3D();
@@ -2523,40 +1968,17 @@ document.querySelectorAll('#productTabs .tab-btn').forEach(btn => {
   });
 });
 
-// Material, Print, Scene Controls
-document.getElementById('materialSelect').addEventListener('change', (e) => {
-  state.material = e.target.value;
-  updateMaterialsConfig();
-  renderAllTextures();
-});
-document.getElementById('bgFillEnabled').addEventListener('change', (e) => {
-  state.bgFillEnabled = e.target.checked;
-  renderAllTextures();
-});
+document.getElementById('materialSelect').addEventListener('change', (e) => { state.material = e.target.value; updateMaterialsConfig(); renderAllTextures(); });
+document.getElementById('bgFillEnabled').addEventListener('change', (e) => { state.bgFillEnabled = e.target.checked; renderAllTextures(); });
 document.getElementById('bgFillColor').addEventListener('input', (e) => {
   state.bgFillColor = e.target.value;
-  if (!state.bgFillEnabled) {
-    state.bgFillEnabled = true;
-    document.getElementById('bgFillEnabled').checked = true;
-  }
+  if (!state.bgFillEnabled) { state.bgFillEnabled = true; document.getElementById('bgFillEnabled').checked = true; }
   renderAllTextures();
 });
-document.getElementById('printMethodSelect').addEventListener('change', (e) => {
-  state.printMethod = e.target.value;
-  updatePreflightBanner();
-});
-document.getElementById('whiteUnderbase').addEventListener('change', (e) => {
-  state.whiteUnderbase = e.target.checked;
-  renderAllTextures();
-});
-document.getElementById('sceneBgSelect').addEventListener('change', (e) => {
-  state.sceneBg = e.target.value;
-  updateSceneEnvironment();
-});
-document.getElementById('showFloraToggle').addEventListener('change', (e) => {
-  state.showFlora = e.target.checked;
-  buildPackaging3D();
-});
+document.getElementById('printMethodSelect').addEventListener('change', (e) => { state.printMethod = e.target.value; updatePreflightBanner(); });
+document.getElementById('whiteUnderbase').addEventListener('change', (e) => { state.whiteUnderbase = e.target.checked; renderAllTextures(); });
+document.getElementById('sceneBgSelect').addEventListener('change', (e) => { state.sceneBg = e.target.value; updateSceneEnvironment(); });
+document.getElementById('showFloraToggle').addEventListener('change', (e) => { state.showFlora = e.target.checked; buildPackaging3D(); });
 document.getElementById('openAmountSlider').addEventListener('input', (e) => {
   const v = parseInt(e.target.value, 10);
   state.openAmount = v / 100;
@@ -2564,7 +1986,6 @@ document.getElementById('openAmountSlider').addEventListener('input', (e) => {
   buildPackaging3D();
 });
 
-// View Mode Switcher (Split / 2D / 3D)
 document.querySelectorAll('.view-bar .pill').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.view-bar .pill').forEach(b => b.classList.remove('active'));
@@ -2577,18 +1998,13 @@ document.querySelectorAll('.view-bar .pill').forEach(btn => {
   });
 });
 
-// Add Text, Icons, Images
 document.getElementById('btnAddText').addEventListener('click', () => {
   const id = nextLayerId++;
   state.layers.push({
-    id, type: 'text', text: 'Новый текст', font: 'Montserrat, sans-serif',
-    fontSize: 48, color: '#0f172a', opacity: 1, finish: 'ink',
-    x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 180,
+    id, type: 'text', text: 'Новый текст', font: 'Montserrat, sans-serif', fontSize: 48,
+    color: '#0f172a', opacity: 1, finish: 'ink', x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 180
   });
-  state.selectedLayerId = id;
-  renderLayerList();
-  syncLayerPropsUI();
-  renderAllTextures();
+  state.selectedLayerId = id; renderLayerList(); syncLayerPropsUI(); renderAllTextures();
 });
 
 document.querySelectorAll('.icon-btn').forEach(btn => {
@@ -2597,52 +2013,40 @@ document.querySelectorAll('.icon-btn').forEach(btn => {
     state.layers.push({
       id, type: 'icon', iconId: btn.dataset.icon, baseSize: 110,
       color: state.material === 'bopp_clear' ? '#ffffff' : '#1e293b',
-      opacity: 1, finish: 'ink',
-      x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 180,
+      opacity: 1, finish: 'ink', x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 180
     });
-    state.selectedLayerId = id;
-    renderLayerList();
-    syncLayerPropsUI();
-    renderAllTextures();
+    state.selectedLayerId = id; renderLayerList(); syncLayerPropsUI(); renderAllTextures();
   });
 });
 
 document.getElementById('imgUpload').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
     const img = new Image();
     img.onload = () => {
-      const maxDim = 260;
-      const ratio = Math.min(maxDim / img.width, maxDim / img.height);
+      const ratio = Math.min(260 / img.width, 260 / img.height);
       const id = nextLayerId++;
       state.layers.push({
         id, type: 'image', img, imgW: img.width * ratio, imgH: img.height * ratio,
-        color: '#ffffff', opacity: 1, finish: 'ink',
-        x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 200,
+        color: '#ffffff', opacity: 1, finish: 'ink', x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 200
       });
-      state.selectedLayerId = id;
-      renderLayerList();
-      syncLayerPropsUI();
-      renderAllTextures();
+      state.selectedLayerId = id; renderLayerList(); syncLayerPropsUI(); renderAllTextures();
     };
     img.src = ev.target.result;
   };
-  reader.readAsDataURL(file);
-  e.target.value = '';
+  reader.readAsDataURL(file); e.target.value = '';
 });
 
-// Layer Property Listeners
 const updateSel = (fn) => {
   const sel = state.layers.find(l => l.id === state.selectedLayerId);
   if (!sel) return;
-  fn(sel);
-  renderLayerList();
-  renderAllTextures();
+  fn(sel); renderLayerList(); renderAllTextures();
 };
 
-document.getElementById('propText').addEventListener('input', (e) => updateSel(l => { l.text = e.target.value; }));
+document.getElementById('propText').addEventListener('input', (e) => updateSel(l => {
+  if (l.type === 'qrcode') l.qrCaption = e.target.value; else l.text = e.target.value;
+}));
 document.getElementById('propFont').addEventListener('change', (e) => updateSel(l => { l.font = e.target.value; }));
 document.getElementById('propColor').addEventListener('input', (e) => updateSel(l => { l.color = e.target.value; }));
 document.getElementById('propOpacity').addEventListener('input', (e) => updateSel(l => { l.opacity = parseFloat(e.target.value); }));
@@ -2670,22 +2074,14 @@ document.getElementById('propPatternGap').addEventListener('input', (e) => {
 document.getElementById('btnDeleteLayer').addEventListener('click', () => {
   state.layers = state.layers.filter(l => l.id !== state.selectedLayerId);
   state.selectedLayerId = state.layers[state.layers.length - 1]?.id || null;
-  renderLayerList();
-  syncLayerPropsUI();
-  renderAllTextures();
+  renderLayerList(); syncLayerPropsUI(); renderAllTextures();
 });
-
 document.getElementById('btnDuplicateLayer').addEventListener('click', () => {
-  const sel = state.layers.find(l => l.id === state.selectedLayerId);
-  if (!sel) return;
+  const sel = state.layers.find(l => l.id === state.selectedLayerId); if (!sel) return;
   const copy = { ...sel, id: nextLayerId++, x: sel.x + 40, y: sel.y + 40 };
-  state.layers.push(copy);
-  state.selectedLayerId = copy.id;
-  renderLayerList();
-  syncLayerPropsUI();
-  renderAllTextures();
+  state.layers.push(copy); state.selectedLayerId = copy.id;
+  renderLayerList(); syncLayerPropsUI(); renderAllTextures();
 });
-
 document.getElementById('btnResetDemo').addEventListener('click', loadDemoLayers);
 
 // =========================================================
@@ -2702,60 +2098,289 @@ document.getElementById('btnExportPNG').addEventListener('click', () => {
 document.getElementById('btnExportSVG').addEventListener('click', () => {
   const artDataUrl = colorCanvas.toDataURL('image/png');
   const pathToD = (pts) => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
-
-  const cuts = currentDieline.cutPaths.map(seg =>
-    `<path d="${pathToD(seg)}" fill="none" stroke="#e11d48" stroke-width="2" />`
-  ).join('\n    ');
-  const creases = currentDieline.creasePaths.map(seg =>
-    `<path d="${pathToD(seg)}" fill="none" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="10,6" />`
-  ).join('\n    ');
-
+  const cuts = currentDieline.cutPaths.map(seg => `<path d="${pathToD(seg)}" fill="none" stroke="#e11d48" stroke-width="2" />`).join('\n    ');
+  const creases = currentDieline.creasePaths.map(seg => `<path d="${pathToD(seg)}" fill="none" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="10,6" />`).join('\n    ');
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${TEX_W}" height="${TEX_H}" viewBox="0 0 ${TEX_W} ${TEX_H}">
-  <g id="Artwork">
-    <image href="${artDataUrl}" x="0" y="0" width="${TEX_W}" height="${TEX_H}" />
-  </g>
-  <g id="Crease_Lines">
-    ${creases}
-  </g>
-  <g id="Cut_Lines">
-    ${cuts}
-  </g>
+  <g id="Artwork"><image href="${artDataUrl}" x="0" y="0" width="${TEX_W}" height="${TEX_H}" /></g>
+  <g id="Crease_Lines">${creases}</g>
+  <g id="Cut_Lines">${cuts}</g>
 </svg>`;
-
   const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = `florapack-${state.productType}-dieline.svg`;
-  link.href = url;
-  link.click();
+  link.href = url; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
 // =========================================================
-// 12. RESIZE & ANIMATION LOOP
+// 12. PLANT CARE GUIDE DATABASE, QR GENERATOR & BUYER VIEW
+// =========================================================
+const CARE_LIBRARY = {
+  phalaenopsis: {
+    id: 'phalaenopsis', icon: '🌺', name: 'Орхидея Фаленопсис', type: 'Горшечное',
+    water: 'Погружение горшка в мягкую воду на 15 мин раз в 7–10 дней (когда корни станут серебристыми).',
+    light: 'Яркий рассеянный свет (восточное или западное окно). Без палящего полуденного солнца.',
+    temp: '+18..+25°C, беречь от холодных сквозняков и батарей.',
+    pets: 'Безопасно для кошек и собак.',
+    tips: [
+      'Не удаляйте воздушные корни и не закапывайте их глубоко.',
+      'Следите, чтобы вода не застаивалась в центре розетки листьев.',
+      'После цветения не спешите обрезать зелёный цветонос — на нём могут проснуться новые бутоны.'
+    ]
+  },
+  roses_cut: {
+    id: 'roses_cut', icon: '🌹', name: 'Розы (срезка)', type: 'Срезка',
+    water: 'Много прохладной чистой воды (заполнить вазу на 2/3). Менять воду каждые 1–2 дня.',
+    light: 'Прохладное место вдали от солнца, сквозняков и вазы с фруктами.',
+    temp: '+15..+20°C (ночью прохлада продлевает жизнь бутона).',
+    pets: 'Нетоксично, но остерегайтесь шипов.',
+    tips: [
+      'Сделайте свежий косой срез стебля под углом 45° острым ножом или секатором.',
+      'Удалите все листья и шипы, которые попадают ниже уровня воды.',
+      'Добавьте в воду пакетик подкормки для срезанных цветов.'
+    ]
+  },
+  bouquet_mix: {
+    id: 'bouquet_mix', icon: '💐', name: 'Авторский букет', type: 'Букет',
+    water: 'В вазе — свежая вода и смена каждые 2 дня. Если букет в губке — подливать по 100 мл воды в центр раз в 2 дня.',
+    light: 'Рассеянный свет, вдали от отопительных приборов и прямых лучей.',
+    temp: '+16..+22°C.',
+    pets: 'Некоторая зелень может вызывать раздражение при поедании.',
+    tips: [
+      'Не вынимайте цветы из флористической губки — просто аккуратно доливайте воду.',
+      'Если букет на воде — подрезайте стебли на 1–2 см при каждой смене воды.',
+      'Вовремя удаляйте увядшие соцветия, чтобы остальные цветы стояли дольше.'
+    ]
+  },
+  hydrangea: {
+    id: 'hydrangea', icon: '💠', name: 'Гортензия', type: 'Срезка',
+    water: 'Любит воду! Полная ваза прохладной воды. Можно опрыскивать саму шапку цветка из пульверизатора.',
+    light: 'Полутень или мягкий рассеянный свет.',
+    temp: '+15..+20°C.',
+    pets: 'Умеренно токсична при проглатывании.',
+    tips: [
+      'Подрежьте стебель под 45° и аккуратно расщепите кончик вдоль на 2–3 см.',
+      'Если шапка гортензии подвяла — погрузите её целиком в прохладную воду на 30–60 минут.'
+    ]
+  },
+  tulips: {
+    id: 'tulips', icon: '🌷', name: 'Тюльпаны', type: 'Срезка',
+    water: 'Очень холодная вода (можно добавить кубик льда), уровень всего 5–7 см.',
+    light: 'Прохлада и рассеянный свет. Тюльпаны тянутся к свету и продолжают расти в вазе.',
+    temp: '+12..+18°C.',
+    pets: 'Токсично для кошек и собак (особенно луковицы).',
+    tips: [
+      'Срез должен быть ПРЯМЫМ (не косым!), чтобы стебель не расслаивался.',
+      'Удалите нижние листья и каждый день подливайте холодную воду.'
+    ]
+  },
+  ficus: {
+    id: 'ficus', icon: '🌿', name: 'Фикус / Монстера', type: 'Горшечное',
+    water: 'Умеренный полив после просушки верхних 2–3 см грунта. Раз в неделю протирайте листья влажной тканью.',
+    light: 'Яркий рассеянный свет (пестролистным сортам нужно больше света).',
+    temp: '+18..+26°C, не любит переохлаждения корней.',
+    pets: 'Сок листьев токсичен при попадании внутрь.',
+    tips: [
+      'Не переставляйте растение без необходимости в первые 2 недели — дайте ему адаптироваться.',
+      'Обеспечьте хороший дренаж, не оставляйте воду в поддоне дольше 20 минут.'
+    ]
+  }
+};
+
+const customCareItems = {};
+let selectedCareIds = ['phalaenopsis'];
+
+function encodeCarePayload(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function decodeCarePayload(str) {
+  let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
+  const bin = atob(b64);
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+function buildCareUrl() {
+  const shop = document.getElementById('careShopName').value.trim() || 'Flora Studio';
+  let base = document.getElementById('careBaseUrl').value.trim();
+  if (!base) base = window.location.href.split('#')[0].split('?')[0];
+  const presetIds = selectedCareIds.filter(id => CARE_LIBRARY[id]);
+  const customs = selectedCareIds.filter(id => customCareItems[id]).map(id => customCareItems[id]);
+  const payload = { s: shop, i: presetIds };
+  if (customs.length) payload.c = customs;
+  return `${base}#care=${encodeCarePayload(payload)}`;
+}
+
+function renderCareChecklistModal() {
+  const grid = document.getElementById('plantCheckGrid');
+  const all = { ...CARE_LIBRARY, ...customCareItems };
+  grid.innerHTML = '';
+  Object.values(all).forEach(item => {
+    const isChecked = selectedCareIds.includes(item.id);
+    const label = document.createElement('label');
+    label.className = 'plant-card-opt' + (isChecked ? ' checked' : '');
+    label.innerHTML = `
+      <input type="checkbox" value="${item.id}" ${isChecked ? 'checked' : ''}>
+      <div>
+        <div style="font-weight:600; font-size:12px;">${item.icon || '🌱'} ${item.name}</div>
+        <div style="font-size:10.5px; color:var(--text-muted);">${item.type}</div>
+      </div>`;
+    label.querySelector('input').addEventListener('change', (e) => {
+      if (e.target.checked) { if (!selectedCareIds.includes(item.id)) selectedCareIds.push(item.id); }
+      else selectedCareIds = selectedCareIds.filter(x => x !== item.id);
+      renderCareChecklistModal();
+    });
+    grid.appendChild(label);
+  });
+}
+
+function openBuyerCareView(payload, isRealScanMode = false) {
+  const overlay = document.getElementById('careBuyerOverlay');
+  document.getElementById('buyerShopTitle').textContent = payload.s || 'Flora Studio';
+  document.getElementById('btnCloseBuyer').style.display = isRealScanMode ? 'none' : 'inline-flex';
+
+  const items = [];
+  (payload.i || []).forEach(id => { if (CARE_LIBRARY[id]) items.push(CARE_LIBRARY[id]); });
+  (payload.c || []).forEach(c => items.push(c));
+  if (items.length === 0) items.push(CARE_LIBRARY.bouquet_mix);
+
+  const tabsEl = document.getElementById('buyerTabs');
+  const contentEl = document.getElementById('buyerContent');
+  tabsEl.innerHTML = '';
+
+  const showItem = (idx) => {
+    const it = items[idx];
+    tabsEl.querySelectorAll('.buyer-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    const tipsHtml = (it.tips || []).map(t => `<li>${t}</li>`).join('');
+    contentEl.innerHTML = `
+      <div class="buyer-card">
+        <div>
+          <span class="care-badge">${it.type || 'Растение'}</span>
+          <h2 style="font-size:20px; margin-top:6px; color:#0f172a;">${it.icon || '🌱'} ${it.name}</h2>
+        </div>
+        <div class="care-grid">
+          <div class="care-metric"><div class="care-metric-title">💧 ПОЛИВ / ВОДА</div><div class="care-metric-val">${it.water}</div></div>
+          <div class="care-metric"><div class="care-metric-title">☀️ ОСВЕЩЕНИЕ</div><div class="care-metric-val">${it.light}</div></div>
+          <div class="care-metric"><div class="care-metric-title">🌡 ТЕМПЕРАТУРА</div><div class="care-metric-val">${it.temp}</div></div>
+          <div class="care-metric"><div class="care-metric-title">🐾 ПИТОМЦЫ</div><div class="care-metric-val">${it.pets || 'Уточните у флориста'}</div></div>
+        </div>
+        ${tipsHtml ? `<div class="care-checklist"><div style="font-weight:700; margin-bottom:4px;">✅ Памятка после покупки:</div><ul style="padding-left:18px; display:flex; flex-direction:column; gap:4px;">${tipsHtml}</ul></div>` : ''}
+      </div>`;
+  };
+
+  items.forEach((it, idx) => {
+    const b = document.createElement('button');
+    b.className = 'buyer-tab' + (idx === 0 ? ' active' : '');
+    b.textContent = `${it.icon || '🌱'} ${it.name}`;
+    b.onclick = () => showItem(idx);
+    tabsEl.appendChild(b);
+  });
+  tabsEl.style.display = items.length > 1 ? 'flex' : 'none';
+  showItem(0);
+  overlay.classList.add('open');
+}
+
+document.getElementById('btnOpenCareModal').addEventListener('click', () => {
+  if (state.productType === 'cone_sleeve' && selectedCareIds.length === 0) selectedCareIds = ['phalaenopsis'];
+  renderCareChecklistModal();
+  document.getElementById('careModal').classList.add('open');
+});
+document.getElementById('btnCloseCareModal').addEventListener('click', () => document.getElementById('careModal').classList.remove('open'));
+document.getElementById('btnToggleCustomPlant').addEventListener('click', () => {
+  const f = document.getElementById('customPlantForm');
+  f.style.display = f.style.display === 'none' ? 'flex' : 'none';
+});
+document.getElementById('btnSaveCustomPlant').addEventListener('click', () => {
+  const name = document.getElementById('cpName').value.trim();
+  if (!name) return alert('Введите название растения или букета');
+  const id = 'cust_' + Date.now(), tipsRaw = document.getElementById('cpTips').value.trim();
+  customCareItems[id] = {
+    id, icon: '🪴', name, type: document.getElementById('cpType').value,
+    water: document.getElementById('cpWater').value.trim() || 'Умеренный полив / свежая вода',
+    light: document.getElementById('cpLight').value.trim() || 'Яркий рассеянный свет',
+    temp: document.getElementById('cpTemp').value.trim() || '+18..+24°C',
+    pets: document.getElementById('cpPets').value.trim() || 'Держать вдали от животных',
+    tips: tipsRaw ? tipsRaw.split(';').map(s => s.trim()).filter(Boolean) : ['Выберите комфортное место без сквозняков.']
+  };
+  selectedCareIds.push(id);
+  document.getElementById('cpName').value = '';
+  document.getElementById('customPlantForm').style.display = 'none';
+  renderCareChecklistModal();
+});
+
+document.getElementById('btnPlaceQr').addEventListener('click', () => {
+  if (selectedCareIds.length === 0) return alert('Выберите хотя бы одно растение для QR-кода.');
+  const url = buildCareUrl();
+  const caption = document.getElementById('careQrCaption').value.trim();
+  const hasBgCard = document.getElementById('careQrBg').checked;
+  const color = document.getElementById('careQrColor').value;
+
+  const existing = state.layers.find(l => l.type === 'qrcode');
+  if (existing) {
+    existing.qrUrl = url; existing.qrCaption = caption; existing.hasBgCard = hasBgCard; existing.color = color;
+    state.selectedLayerId = existing.id;
+  } else {
+    const id = nextLayerId++;
+    state.layers.push({
+      id, type: 'qrcode', qrUrl: url, qrCaption: caption, hasBgCard, baseSize: 170,
+      color, opacity: 1, finish: 'ink', x: TEX_W / 2, y: TEX_H / 2, scale: 1, rotation: 0, repeatPattern: false, patternGap: 240
+    });
+    state.selectedLayerId = id;
+  }
+  document.getElementById('careModal').classList.remove('open');
+  renderLayerList(); syncLayerPropsUI(); renderAllTextures();
+});
+
+document.getElementById('btnPreviewBuyer').addEventListener('click', () => {
+  const shop = document.getElementById('careShopName').value.trim() || 'Flora Studio';
+  const presetIds = selectedCareIds.filter(id => CARE_LIBRARY[id]);
+  const customs = selectedCareIds.filter(id => customCareItems[id]).map(id => customCareItems[id]);
+  openBuyerCareView({ s: shop, i: presetIds, c: customs }, false);
+});
+document.getElementById('btnCloseBuyer').addEventListener('click', () => document.getElementById('careBuyerOverlay').classList.remove('open'));
+document.getElementById('btnCopyCareLink').addEventListener('click', () => {
+  const url = buildCareUrl();
+  navigator.clipboard?.writeText(url).then(() => alert('Ссылка скопирована!\n' + url));
+});
+
+function checkIncomingCareHash() {
+  if (window.location.hash.startsWith('#care=')) {
+    try {
+      const payload = decodeCarePayload(window.location.hash.slice(6));
+      openBuyerCareView(payload, true);
+    } catch (e) { console.error('Ошибка чтения QR-данных:', e); }
+  }
+}
+window.addEventListener('hashchange', checkIncomingCareHash);
+
+// =========================================================
+// 13. RESIZE, LOOP & INITIALIZATION
 // =========================================================
 function resize3D() {
-  const w = wrap3d.clientWidth;
-  const h = wrap3d.clientHeight;
+  const w = wrap3d.clientWidth, h = wrap3d.clientHeight;
   if (w > 0 && h > 0) {
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
 }
-
 new ResizeObserver(resize3D).observe(wrap3d);
 
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
+  if (!document.getElementById('careBuyerOverlay').classList.contains('open')) {
+    controls.update();
+    renderer.render(scene, camera);
+  }
 }
 
-// =========================================================
-// 13. INITIALIZATION
-// =========================================================
 updateSceneEnvironment();
 renderDimsUI();
 currentDieline = computeDieline(state);
@@ -2763,6 +2388,7 @@ buildPackaging3D();
 loadDemoLayers();
 resize3D();
 animate();
+checkIncomingCareHash();
 </script>
 </body>
 </html>
